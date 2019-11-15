@@ -1,0 +1,48 @@
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+        <div class="col-xl-12 col-md-12 mb-12">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Leer Notificacion <b>No. </b>{{ obj.id }}
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <div class="row"><b>Fecha: </b>{{ obj.fc }}</div>
+                            <div class="row"><b>De: </b>{{ obj.uc }}</div>
+                            <div class="row"><b>Asunto: </b>{{ obj.asunto }}</div>
+                            <div class="row"><b>Mensaje: </b>{{ obj.mensaje }}</div>
+                            <div class="row"><b>Estado: </b>{{ obj.estado }}</div>
+                            <div class="dropdown-divider"></div>
+                            <div class="row">
+                                <div class="col">
+                                    {% if obj.estado %}
+                                    <button class="btn btn-success" onclick="return cerrar_lectura({{ obj.id }}, false )"><span
+                                            class="fa fa-undo"></span>Cerrar</button>
+                                    {% else %}
+                                    <button class="btn btn-success" onclick="return cerrar_lectura({{ obj.id }}, true )"><span
+                                        class="fa fa-undo"></span>Cerrar</button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+{% block js_page %}
+<script>
+function cerrar_lectura(id, leido){
+    if(!leido){
+        leer(id);
+    }
+    cerrar_modal();
+}
+</script>
+{% endblock %}

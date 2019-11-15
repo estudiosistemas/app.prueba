@@ -1,0 +1,122 @@
+{% extends 'base/base.html' %}
+
+{% block page_content %}
+<div class="card shadow mb-4">
+    <!-- Card Header - Dropdown -->
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">Bandeja de Notificaciones Recibidas</h6>
+      <!-- <div class="dropdown no-arrow">
+        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+          <div class="dropdown-header">Acciones</div>
+          <a class="dropdown-item" onclick="return abrir_modal('{% url 'bases:notificacion_new' %}')" href="#"><i class="far fa-calendar-plus"></i> Agregar</a>
+        </div>
+      </div> -->
+    </div>
+    <!-- Card Body -->
+    <div class="card-body">
+      {% if not obj %}
+        <div class="alert alert-info">No hay Notificaciones</div>
+      {% endif %}
+      <div class="buttons-toolbar">
+        <a class="dropdown-item" onclick="return abrir_modal('{% url 'bases:notificacion_new' %}')" href="#"><i class="far fa-calendar-plus"></i> Agregar</a>
+      </div>
+      <table
+        id="tblNotificaciones"
+        data-locale="es-AR"
+        data-toggle="table"
+        data-pagination="true"
+        data-search="true"
+        data-show-columns="true"
+        data-show-export="true"
+        data-show-footer="true"
+        data-show-toggle="true"
+        data-show-fullscreen="true"
+        data-toolbar=".buttons-toolbar"
+      >
+            <thead>
+                <th data-sortable="true" data-field="id">Id</th>
+                <th data-sortable="true" data-field="uc">De</th>
+                <th data-sortable="true" data-field="fc">Fecha</th>
+                <th data-sortable="true" data-field="asunto">Asunto</th>
+                <th data-field="estado">Estado</th>
+                <th class="all">Acciones</th>
+            </thead>
+            <tbody>
+                {% for item in obj %}
+                <tr>
+                    {% if item.estado %}
+                      <td><b>{{ item.id }}</b></td>
+                      <td><b>{{ item.uc }}</b></td>
+                      <td><b>{{ item.fc }}</b></td>
+                      <td><b>{{ item.asunto }}</b></td>
+                    {% else %}
+                      <td>{{ item.id }}</td>
+                      <td>{{ item.uc }}</td>
+                      <td>{{ item.fc }}</td>
+                      <td>{{ item.asunto }}</td>
+                    {% endif %}
+                    <td>
+                      <div onclick="leer({{item.id}})">
+                        {% if item.estado %}
+                        <i class="fas fa-check text-primary"></i>
+                        {% else %}
+                        <i class="fas fa-check-double text-success"></i>
+                        {% endif %}
+                    </div>
+                    </td>
+
+                    <td>
+                        <button class="btn btn-warning btn-sm" 
+                        onclick="return abrir_modal('{% url 'bases:notificacion_read' item.id %}')">
+                        <i class="fab fa-readme"></i></button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+      </table>
+      
+    </div>
+  </div>
+{% endblock %}
+
+{% block js_page %}
+<script>
+function leer(id){
+  var data = {id:id};
+  data = JSON.stringify(data);
+  var token = '{{csrf_token}}';
+
+  $.ajax({
+    headers : {"X-CSRFToken": token},
+    type: "POST",
+    url: "/notify/leer/"+id,
+    data: data,
+    success: function(response){
+      if(response==="OK"){
+        location.reload(true);
+      }
+      else{
+        mensaje("Error al cambiar estado de notificación")
+      }
+    },
+    error: function(jrXHR, textStatus, errorThrow){
+      console.log(textStatus, errorThrow);
+      mensaje(errorThrow, 'red');
+      cerrar_modal()
+    }
+  });
+}
+
+function mostrarModal(id){
+  abrir_modal("/notify/read/" +id);
+}
+
+function mostrarMensaje(id){
+  $.when(mostrarModal(id)).then(leer(id));
+}
+</script>
+{% endblock %}

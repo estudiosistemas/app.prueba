@@ -1,0 +1,96 @@
+{% extends 'base/base.html' %}
+
+{% block page_content %}
+<div class="card shadow mb-4">
+    <!-- Card Header - Dropdown -->
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">Listado de Facturas</h6>
+      <!-- <div class="dropdown no-arrow">
+        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+        </a>
+        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+          <div class="dropdown-header">Acciones</div>
+          <a class="dropdown-item" onclick="return abrir_modal('{% url 'fac:cliente_new' %}')" href="#"><i class="far fa-calendar-plus"></i> Agregar</a>
+        </div>
+      </div> -->
+    </div>
+    <!-- Card Body -->
+    <div class="card-body">
+      {% if not obj %}
+        <div class="alert alert-info">No hay Facturas</div>
+      {% endif %}
+      <div class="buttons-toolbar">
+        <a class="btn btn-success" href="{% url 'fac:factura_new' %}"><i class="far fa-calendar-plus"></i> Nuevo</a>
+      </div>
+      <table 
+        id="table"
+        data-locale="es-AR"
+        data-toggle="table"
+        data-pagination="true"
+        data-search="true"
+        data-show-columns="true"
+        data-show-export="true"
+        data-show-footer="true"
+        data-show-toggle="true"
+        data-show-fullscreen="true"
+        data-toolbar=".buttons-toolbar"
+      >
+            <thead>
+                <th data-sortable="true" data-field="id">No.</th>
+                <th data-sortable="true" data-field="nombres">Cliente</th>
+                <th data-sortable="true" data-field="apellidos">Total</th>
+                <th data-field="estado">Estado</th>
+                <th class="all">Acciones</th>
+            </thead>
+            <tbody>
+                {% for item in obj %}
+                <tr>
+                    <td>{{ item.id }}</td>
+                    <td>{{ item.cliente }}</td>
+                    <td>{{ item.total }}</td>
+                    <td>{{ item.estado|yesno:"Activo, Inactivo" }}</td>
+                    <td>
+                        <a href="{% url 'fac:factura_edit' item.id %}" class="btn btn-warning btn-sm"><i class="fa fa-edit"></i></a>
+                        <a href="#" class="btn btn-success btn-sm" onclick="facturaFE({{item.id}})"><i class="fas fa-file-invoice-dollar"></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+      </table>
+      
+    </div>
+  </div>
+{% endblock %}
+
+{% block js_page %}
+<script type="text/javascript">
+  function facturaFE(id){
+  var data = {id:id};
+  data = JSON.stringify(data);
+  var token = '{{csrf_token}}';
+
+  $.ajax({
+    headers : {"X-CSRFToken": token},
+    type: "POST",
+    url: "/fac/facturas/FE/"+id,
+    data: data,
+    success: function(response){
+      if(response==="OK"){
+        mensaje("Factura Electronica "+id+" Generada Correctmente",'green');
+        //location.reload(true);
+      }
+      else{
+        mensaje("Error al generar Factura Electronica",'red')
+      }
+    },
+    error: function(jrXHR, textStatus, errorThrow){
+      console.log(textStatus, errorThrow);
+      mensaje(errorThrow, 'red');
+      cerrar_modal()
+    }
+  });
+}
+</script>
+{% endblock %}
