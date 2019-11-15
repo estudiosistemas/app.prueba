@@ -1,3 +1,4 @@
+{% load qr_code %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -74,6 +75,11 @@
                     {% endfor %}
                 </tbody>
             </table>
+            <div class="row">
+                <br>
+                {% qr_from_text encabezado.id size=4 image_format="png" error_correction="L" %}
+            
+            </div>
         </div>
     </div>
 </body>

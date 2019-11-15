@@ -1,3 +1,6 @@
+## IGNORADOS POR MCOSTA
+app/settings.py
+pyafipws/
 
 # Created by https://www.gitignore.io/api/django,visualstudiocode
 # Edit at https://www.gitignore.io/?templates=django,visualstudiocode

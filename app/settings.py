@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_userforeignkey',
     'rest_framework',
+    'qr_code',
     'bases',
     'inv',
     'cmp',
