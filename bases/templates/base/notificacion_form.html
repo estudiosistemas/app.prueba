@@ -1,9 +1,10 @@
+{% load crispy_forms_tags %}
 <div class="modal-dialog modal-lg">
     <div class="modal-content">
         {% if obj %}
         <form method="POST" role="form" class="form-inline" action="{% url 'bases:notificacion_edit' obj.pk %}">
         {% else %}
-        <form method="POST" role="form" class="form-inline" action="{% url 'bases:notificacion_new' %}">
+        <form method="POST" role="form" action="{% url 'bases:notificacion_new' %}">
         {% endif %}
             {% csrf_token %}
             <div class="col-xl-12 col-md-12 mb-12">
@@ -20,7 +21,7 @@
                             </div>
                             <div class="dropdown-divider"></div>
                             <div class="row">
-                                {{ form.as_p }}
+                                {{ form|crispy }}
                             </div>
                             <div class="dropdown-divider"></div>
                             <div class="row">

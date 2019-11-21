@@ -39,8 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_userforeignkey',
     'rest_framework',
+    'rest_framework.authtoken',
+    'crispy_forms',
     'qr_code',
+    'postman',
     'bases',
+    'usr',
     'inv',
     'cmp',
     'fac',
@@ -136,6 +140,9 @@ STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
 LOGIN_REDIRECT_URL = '/'
 
 LOGOUT_REDIRECT_URL = '/login/'
@@ -145,3 +152,8 @@ REST_FRAMEWORK = {
     'rest_framework.authentication.SessionAuthentication',
 ),
 }
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+#POSTMAN OPTIONS
+POSTMAN_AUTO_MODERATE_AS = True

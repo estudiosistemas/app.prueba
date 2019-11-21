@@ -85,31 +85,7 @@
 
 {% block js_page %}
 <script>
-function leer(id){
-  var data = {id:id};
-  data = JSON.stringify(data);
-  var token = '{{csrf_token}}';
 
-  $.ajax({
-    headers : {"X-CSRFToken": token},
-    type: "POST",
-    url: "/notify/leer/"+id,
-    data: data,
-    success: function(response){
-      if(response==="OK"){
-        location.reload(true);
-      }
-      else{
-        mensaje("Error al cambiar estado de notificación")
-      }
-    },
-    error: function(jrXHR, textStatus, errorThrow){
-      console.log(textStatus, errorThrow);
-      mensaje(errorThrow, 'red');
-      cerrar_modal()
-    }
-  });
-}
 
 function mostrarModal(id){
   abrir_modal("/notify/read/" +id);

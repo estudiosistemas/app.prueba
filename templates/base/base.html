@@ -19,6 +19,8 @@
   <!-- Custom styles for this template-->
   <link href="{% static 'base/css/sb-admin-2.min.css' %}" rel="stylesheet">
 
+  <link href="{% static 'base/css/animate.css' %}" rel="stylesheet">
+
   <!-- Custom styles for this page -->
   <link href="{% static 'base/vendor/datatables/dataTables.bootstrap4.min.css' %}" rel="stylesheet">
 
@@ -126,22 +128,19 @@
           </div>
         </li>
 
-      <!-- Nav Item - Utilities Collapse Menu
+      <!-- Nav Item - Utilities Collapse Menu -->
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseUtilities" aria-expanded="true" aria-controls="collapseUtilities">
           <i class="fas fa-fw fa-wrench"></i>
-          <span>Utilities</span>
+          <span>Administración</span>
         </a>
         <div id="collapseUtilities" class="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
           <div class="bg-white py-2 collapse-inner rounded">
-            <h6 class="collapse-header">Custom Utilities:</h6>
-            <a class="collapse-item" href="utilities-color.html">Colors</a>
-            <a class="collapse-item" href="utilities-border.html">Borders</a>
-            <a class="collapse-item" href="utilities-animation.html">Animations</a>
-            <a class="collapse-item" href="utilities-other.html">Other</a>
+            <h6 class="collapse-header">Usuarios:</h6>
+            <a class="collapse-item" href="{% url 'usr:registrar_usuario' %}">Registrar Usuario</a>
           </div>
         </div>
-      </li> -->
+      </li>
 
       <!-- Divider -->
       <hr class="sidebar-divider">
@@ -354,6 +353,7 @@
                     <div class="small text-gray-500">Chicken the Dog · 2w</div>
                   </div>
                 </a>
+                
                 <a class="dropdown-item text-center small text-gray-500" href="#">Read More Messages</a>
               </div>
             </li>
@@ -364,11 +364,11 @@
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ user.username }}</span>
-                <img class="img-profile rounded-circle" src="{% static 'base/img/user.png' %}">
+                <img class="img-profile rounded-circle" src="{{ user.profile.image.url }}">
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="#">
+                <a class="dropdown-item" href="{% url 'usr:perfil_usuario' %}">
                   <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
                   Perfil
                 </a>
@@ -395,6 +395,7 @@
         <!-- End of Topbar -->
 
         <!-- Begin Page Content -->
+        
         {% block page_content %}
         <div class="container-fluid">
 
@@ -469,6 +470,9 @@
     <!-- Page level plugins -->
     <script src="{% static 'base/vendor/datatables/jquery.dataTables.min.js' %}"></script>
     <script src="{% static 'base/vendor/datatables/dataTables.bootstrap4.min.js' %}"></script>
+
+    <!-- Boostrap-Notify -->
+    <script src="{% static 'base/js/bootstrap-notify.min.js' %}"></script>
   
     <!-- Jquery-Confirm -->
     <script src="{% static 'base/vendor/jquery_confirm/jquery-confirm.min.js' %}"></script>
@@ -492,6 +496,31 @@
 
   <script>
 
+function leer(id){
+  var data = {id:id};
+  data = JSON.stringify(data);
+  var token = '{{csrf_token}}';
+
+  $.ajax({
+    headers : {"X-CSRFToken": token},
+    type: "POST",
+    url: "/notify/leer/"+id,
+    data: data,
+    success: function(response){
+      if(response==="OK"){
+        location.reload(true);
+      }
+      else{
+        mensaje("Error al cambiar estado de notificación")
+      }
+    },
+    error: function(jrXHR, textStatus, errorThrow){
+      console.log(textStatus, errorThrow);
+      mensaje(errorThrow, 'red');
+      cerrar_modal()
+    }
+  });
+}
     function buscarNotificaciones(){
         
         var codigo = '{{user.id}}';
@@ -515,7 +544,7 @@
 
                   if (i==3){ break; }
                   var aPath = "/notify/read/" + r[i].id
-                  var contenido=contenido + "<a class='dropdown-item d-flex align-items-center' href='#' onclick='return abrir_modal('"+aPath+"');'><div><div class='small text-gray-500'>"+r[i].fc+"</div><div class='font-weight-bold'>"+r[i].uc.username+"</div><div>"+r[i].asunto+"</div></div>  </a>";
+                  var contenido=contenido + "<a class='dropdown-item d-flex align-items-center' href='#' onclick='return abrir_modal(\""+aPath+"\")'><div class='dropdown-list-image mr-3'>  <img class='rounded-circle' src='"+r[i].avatar+"' alt=''></div><div><div class='small text-gray-500'>"+r[i].fc+"</div><div class='font-weight-bold'>"+r[i].uc.username+"</div><div>"+r[i].asunto+"</div></div></a>";
                     
                 };
 
@@ -565,13 +594,24 @@
       return false;
     }
     
-    function mensaje(msg, color='green')
+    function mensaje(msg, color='success', titulo='', icono='fas fa-angle-right', barra=false)
     {
-      $.alert({
-        title:'',
-        theme:'material',
-        type:color,
-        content:msg
+      // $.alert({
+      //   title:'',
+      //   theme:'material',
+      //   type:color,
+      //   content:msg
+      // });
+      $.notify({
+	      // options
+        icon: icono,
+        title: titulo,
+	      message: msg 
+      },{
+	      // settings
+	      type: color,
+        delay: 3000,
+        showProgressbar: barra
       });
     }
 

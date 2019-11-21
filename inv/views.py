@@ -50,7 +50,7 @@ class SubCategoriaView(SinPrivilegios, generic.ListView ):
     context_object_name = 'obj'
 
 
-class SubCategoriaNew(SinPrivilegios, generic.CreateView):
+class SubCategoriaNew(VistaBaseCreate):
     permission_required = 'inv.add_subcategoria'
     model = SubCategoria
     template_name='inv/subcategoria_form.html'
@@ -62,7 +62,7 @@ class SubCategoriaNew(SinPrivilegios, generic.CreateView):
         form.instance.uc = self.request.user
         return super().form_valid(form)
 
-class SubCategoriaEdit(SinPrivilegios, generic.UpdateView):
+class SubCategoriaEdit(VistaBaseEdit):
     permission_required = 'inv.change_subcategoria'
     model = SubCategoria
     template_name='inv/subcategoria_form.html'

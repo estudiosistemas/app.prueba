@@ -112,3 +112,11 @@ def notificacion_read(request, id):
         contexto={'obj': notif}
 
     return render(request,template_name, contexto)
+
+
+# class UserProfile(VistaBaseEdit):
+#     permission_required = ''
+#     model = UserProfileForm
+#     template_name='base/profile_form.html'
+#     form_class=UserProfile
+#     success_url=reverse_lazy('bases:home')

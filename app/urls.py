@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include 
 
+
 urlpatterns = [
 
     path('', include(('bases.urls', 'bases'), namespace='bases')),
@@ -23,6 +24,8 @@ urlpatterns = [
     path('cmp/', include(('cmp.urls', 'cmp'), namespace='cmp')),
     path('fac/', include(('fac.urls', 'fac'), namespace='fac')),
     path('api/', include(('api.urls', 'api'), namespace='api')),
+    path('messages/', include('postman.urls', namespace='postman')),
+    path('usuario/', include(('usr.urls', 'usr'), namespace='usr')),
 
     path('admin/', admin.site.urls),
 ]

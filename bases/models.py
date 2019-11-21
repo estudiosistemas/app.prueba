@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django_userforeignkey.models.fields import UserForeignKey
+from django.contrib.auth.models import User
+from usr.models import Profile
 
 class MyModel(models.Model):
     estado = models.BooleanField(default=True)
@@ -40,3 +42,5 @@ class Notificacion(MyModel):
 
     class Meta:
         verbose_name_plural = "Notificaciones"
+
+

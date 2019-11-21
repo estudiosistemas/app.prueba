@@ -1,4 +1,5 @@
 {% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
 
 {% block side_bar %}{% endblock side_bar %}
 {% block top_bar %}{% endblock top_bar %}
@@ -20,39 +21,21 @@
                         <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
                         <div class="col-lg-6">
                             <div class="p-5">
-                                <div class="text-center">
-                                    <h1 class="h4 text-gray-900 mb-4">Ingreso al Sistema!</h1>
-                                    <small class="text-danger">
-                                            {% if form.errors %}
-                                            {% for field in form %}
-                                                {% if field.errors %}
-                                                    {% for error in field.errors %}
-                                                        {{ error | escape }}
-                                                    {% endfor %}
-                                                {% endif %}
-                                            {% endfor %}
-                                    
-                                            {% if form.non_field_errors %}
-                                                {% for error in form.non_field_errors %}
-                                                    {{ error | escape }}
-                                                {% endfor %}
-                                            {% endif %}
-                                        {% endif %}
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    <fieldset class="form-group">
+                                        <legend class="border-bottom mb-4">Ingreso al Sistema</legend>
+                                        {{ form|crispy }}
+                                    </fieldset>
+                                    <div class="form-group">
+                                        <button class="btn btn-outline-info" type="submit">Ingresar</button>
+                                    </div>
+                                </form>
+                                <div class="border-top pt-3">
+                                    <small class="text-muted">
+                                        Olvido su contraseña? <a href="#" class="ml-2">Recordar</a>
                                     </small>
                                 </div>
-                                <form class="user" method="POST">
-                                    {% csrf_token %}
-                                    <!-- {{ form.as_p }} -->
-                                    
-                                    <div class="form-group">
-                                        <input type="text" class="form-control form-control-user" id="id_username"
-                                            name="username" aria-describedby="emailHelp"
-                                            placeholder="Ingrese su usuario...">
-                                    </div>
-                                    <div class="form-group">
-                                        <input type="password" class="form-control form-control-user" id="id_password"
-                                            name="password" placeholder="Contraseña">
-                                    </div>
 
                                     <!-- <div class="form-group">
                       <div class="custom-control custom-checkbox small">
@@ -60,13 +43,7 @@
                         <label class="custom-control-label" for="customCheck">Remember Me</label>
                       </div>
                     </div> -->
-                                    <button class="btn btn-primary btn-user btn-block">Ingresar</button>
-
-                                </form>
-                                <hr>
-                                <div class="text-center">
-                                    <a class="small" href="forgot-password.html">Olvidó su contraseña?</a>
-                                </div>
+                        
                                 <!-- <div class="text-center">
                     <a class="small" href="register.html">Create an Account!</a>
                   </div> -->
@@ -84,21 +61,4 @@
 {% endblock %}
 
 {% block js_page %}
-<script>
-    {% if form.errors %}
-        {% for field in form %}
-            {% if field.errors %}
-                {% for error in field.errors %}
-                    mensaje('{{ error | escape }}','red');
-                {% endfor %}
-            {% endif %}
-        {% endfor %}
-
-        {% if form.non_field_errors %}
-            {% for error in form.non_field_errors %}
-                mensaje('{{ error | escape }}','red');
-            {% endfor %}
-        {% endif %}
-    {% endif %}
-</script>
 {% endblock %}
