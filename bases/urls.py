@@ -8,6 +8,8 @@ from api.views import Login,Logout
 
 from bases.views import Home, HomeSinPrivilegios, NotificacionView, notificacion_leer, NotificacionNew, notificacion_read
 
+from .views import CustomAuthToken
+
 
 urlpatterns = [
     path('',Home.as_view(), name='home'),
@@ -15,7 +17,7 @@ urlpatterns = [
     #path('logout/', auth_views.LogoutView.as_view(template_name='base/login.html'), name='logout'),
     path('login/',Login.as_view(), name = 'login'),
     path('logout/', Logout.as_view(), name = 'logout'),
-    path('api_generate_token/', views.obtain_auth_token),
+    path('api_generate_token/', CustomAuthToken.as_view(), name='api_generate_token'),
     
     path('sin_privilegios/',HomeSinPrivilegios.as_view(), name='sin_privilegios'),
 

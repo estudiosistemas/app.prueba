@@ -12,6 +12,10 @@ from django.http import HttpResponse
 
 from django.views import generic
 
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+
 from .models import Notificacion
 from .forms import NotificacionForm
 
@@ -89,6 +93,16 @@ def notificacion_leer(request, id):
     return HttpResponse('FAIL')
 
 
+# class NotificacionList(APIView):
+#     authentication_classes = (TokenAuthentication,)
+#     permission_classes = (IsAuthenticated,)
+    
+#     def get(self, request, codigo):
+#         notif = Notificacion.objects.filter(user_destino=codigo, estado=True)
+#         data = NotificacionSerializer(notif, many=True).data
+#         return Response(data)
+
+
 # class NotificacionRead(SinPrivilegios, generic.ListView ):
 #     permission_required = 'bases.view_notificacion'
 #     model = Notificacion
@@ -120,3 +134,19 @@ def notificacion_read(request, id):
 #     template_name='base/profile_form.html'
 #     form_class=UserProfile
 #     success_url=reverse_lazy('bases:home')
+
+
+#Sobreescribo la clase para generer token, y devuelvo tambien el id_del usuario
+class CustomAuthToken(ObtainAuthToken):
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            #'email': user.email
+        })
