@@ -17,4 +17,3 @@ class NotificacionForm(forms.ModelForm):
                 'class':'form-control'
             })
 
-

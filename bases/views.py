@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy
 
@@ -18,7 +18,7 @@ from rest_framework.response import Response
 
 from .models import Notificacion
 from .forms import NotificacionForm
-
+from usr.models import Profile
 
 class SinPrivilegios(LoginRequiredMixin, PermissionRequiredMixin):
     raise_exception=False
@@ -30,10 +30,6 @@ class SinPrivilegios(LoginRequiredMixin, PermissionRequiredMixin):
         if not self.request.user==AnonymousUser():
             self.login_url='bases:sin_privilegios'
         return HttpResponseRedirect(reverse_lazy(self.login_url))
-
-class Home(LoginRequiredMixin, generic.TemplateView):
-    template_name='base/home.html'
-    login_url='bases:login'
 
 class HomeSinPrivilegios(LoginRequiredMixin, generic.TemplateView):
     template_name='base/sin_privilegios.html'
@@ -56,6 +52,20 @@ class VistaBaseEdit(SuccessMessageMixin, SinPrivilegios, generic.UpdateView):
     def form_valid(self, form):
         form.instance.um = self.request.user.id
         return super().form_valid(form)
+
+
+#VISTA HOME TABLERO
+class Home(LoginRequiredMixin, generic.ListView):
+    template_name='base/home.html'
+    permission_required = 'bases.view_notificacion'
+    login_url='bases:login'   
+    model = Notificacion
+    context_object_name = 'obj'
+
+    def get_queryset(self):
+        myUser = self.request.user.id 
+        myQuery = Notificacion.objects.filter(user_destino=myUser, estado=True)
+        return myQuery
 
 
 # Vistas para las notificaciones
@@ -92,25 +102,6 @@ def notificacion_leer(request, id):
         return HttpResponse('FAIL')
     return HttpResponse('FAIL')
 
-
-# class NotificacionList(APIView):
-#     authentication_classes = (TokenAuthentication,)
-#     permission_classes = (IsAuthenticated,)
-    
-#     def get(self, request, codigo):
-#         notif = Notificacion.objects.filter(user_destino=codigo, estado=True)
-#         data = NotificacionSerializer(notif, many=True).data
-#         return Response(data)
-
-
-# class NotificacionRead(SinPrivilegios, generic.ListView ):
-#     permission_required = 'bases.view_notificacion'
-#     model = Notificacion
-#     template_name = 'base/notificacion_read.html'
-#     context_object_name = 'obj'
-
-#     def get_queryset(self):
-#         return  Notificacion.objects.get(id=3)
 
 @login_required(login_url='/login/')
 @permission_required('bases.change_notificacion', login_url='bases:sin_privilegios')

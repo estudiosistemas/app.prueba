@@ -1,1 +1,80 @@
 {% extends 'base/base.html' %}
+
+{% block page_content %}
+    <div class="card shadow mb-2">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h4 class="m-0 font-weight-bold text-primary">Tablero</h4>
+        </div>
+    </div>
+    <div class="card-body">
+        {% if not obj %}
+        <div class="card border-left-alert shadow h-100  col-xl-6 col-md-6 mb-6">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="alert alert-info">No hay Notificaciones</div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="card shadow py-0 shadow h-100 col-xl-6 col-md-6 mb-6">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h6 class="m-0 font-weight-bold text-primary">Nuevas Notificaciones</h6>
+                    </div>
+                    <div class="col" align="right">
+                    <a class="btn btn-outline-primary mb-0" href="{% url 'bases:notificacion_list' %}">Ver todas</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        {% endif %}          
+
+            {% for item in obj %}
+            <div class="card border-left-success shadow h-100 py-2 col-xl-6 col-md-6 mb-6">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col mr-2">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                    <div class="row">
+                                        <div class="col">Fecha: {{ item.fc }}</div>
+                                        <div class="col" align="right">
+                                            <a href="#" onclick="leer({{item.id}})">Marcar como Leída</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="dropdown-divider"></div>
+                                <div class="row">
+                                <div class="col-2">
+                                    <div class='dropdown-list-image mr-2'><img class='rounded-circle' src="{{ item.uc.profile.image.url }}" alt="" height="70" width="70"></div>
+                                </div>
+                                <div class="col-10">
+                                <table>
+                                    <tr>
+                                        <td><b>De:</b></td>    
+                                        <td>{{ item.uc }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>asunto:</b></td>    
+                                        <td>{{ item.asunto }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Mensaje:</b></td>    
+                                        <td>{{ item.mensaje }}</td>
+                                    </tr>
+                                </table>
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+            {% endfor %}
+           
+          </div>
+      
+
+
+{% endblock %}

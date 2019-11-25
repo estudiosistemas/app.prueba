@@ -86,6 +86,15 @@ class NotificacionList(APIView):
         return Response(data)
 
 
+class NotificacionListWeb(APIView):
+    permission_classes = (IsAuthenticated,)
+    
+    def get(self, request, codigo):
+        notif = Notificacion.objects.filter(user_destino=codigo, estado=True)
+        data = NotificacionSerializer(notif, many=True).data
+        return Response(data)
+        
+
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:

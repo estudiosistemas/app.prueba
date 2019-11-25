@@ -7,7 +7,6 @@ from rest_framework.authtoken import views
 from api.views import Login,Logout
 
 from bases.views import Home, HomeSinPrivilegios, NotificacionView, notificacion_leer, NotificacionNew, notificacion_read
-
 from .views import CustomAuthToken
 
 
