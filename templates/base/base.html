@@ -36,6 +36,8 @@
   <!-- Select2 -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
 
+  {% block page_head %}{% endblock %}
+
 </head>
 
 <body id="page-top" class="bg-gradient-primary" onLoad="buscarNotificaciones()">
@@ -73,6 +75,27 @@
       </div>
 
       <!-- Nav Item - Pages Collapse Menu -->
+      <li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseApp" aria-expanded="true" aria-controls="collapseTwo">
+          <i class="fas fa-fw fa-cog"></i>
+          <span>Aplicaciones</span>
+        </a>
+        <div id="collapseApp" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar">
+          <div class="bg-white py-2 collapse-inner rounded">
+            <!-- <h6 class="collapse-header">Catálogos de Inventario:</h6> -->
+            {% if perms.cmp.view_categoria %}
+            <a class="collapse-item" href="{#% url 'inv:categoria_list' %#}#">Gestion Guias</a>
+            {% endif %}
+            {% if perms.cmp.view_compraenc %}
+            <a class="collapse-item" href="{% url 'cmp:compras_home' %}">Gestión Compras</a>
+            {% endif %}
+            {% if perms.inv.view_marca %}
+            <a class="collapse-item" href="{#% url 'inv:marca_list' %#}#">Gestión Caja y Bancos</a>
+            {% endif %}
+          </div>
+        </div>
+      </li>
+
       <li class="nav-item">
         <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
           <i class="fas fa-fw fa-cog"></i>
@@ -204,7 +227,7 @@
 
         <!-- Topbar -->
         {% block top_bar %}
-        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+        <nav class="navbar navbar-expand navbar-light bg-white topbar mb-0 static-top shadow">
 
           <!-- Sidebar Toggle (Topbar) -->
           <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">

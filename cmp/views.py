@@ -18,6 +18,9 @@ from .forms import ProveedorForm, ComprasEncForm
 from bases.views import SinPrivilegios
 from inv.models import Producto
 
+class Home(SinPrivilegios, generic.TemplateView):
+    permission_required = 'cmp.view_proveedor'
+    template_name='cmp/home.html'
 
 class ProveedorView(SinPrivilegios, generic.ListView ):
     permission_required = 'cmp.view_proveedor'
