@@ -527,7 +527,7 @@ function leer(id){
   $.ajax({
     headers : {"X-CSRFToken": token},
     type: "POST",
-    url: "/notify/leer/"+id,
+    url: "/gtl/notify/leer/"+id,
     data: data,
     success: function(response){
       if(response==="OK"){
@@ -551,7 +551,7 @@ function leer(id){
             return false;
         }
 
-        var path = "/api/v1/notifyWEB/" + codigo;
+        var path = "/gtl/api/v1/notifyWEB/" + codigo;
         $.ajax({
             type:"GET",
             url: path,
@@ -566,7 +566,7 @@ function leer(id){
                 for (i = 0; i < r.length; i++) {
 
                   if (i==3){ break; }
-                  var aPath = "/notify/read/" + r[i].id
+                  var aPath = "/gtl/notify/read/" + r[i].id
                   var contenido=contenido + "<a class='dropdown-item d-flex align-items-center' href='#' onclick='return abrir_modal(\""+aPath+"\")'><div class='dropdown-list-image mr-3'>  <img class='rounded-circle' src='"+r[i].avatar+"' alt=''></div><div><div class='small text-gray-500'>"+r[i].fc+"</div><div class='font-weight-bold'>"+r[i].uc.username+"</div><div>"+r[i].asunto+"</div></div></a>";
                     
                 };

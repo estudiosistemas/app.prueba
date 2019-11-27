@@ -54,6 +54,10 @@ class VistaBaseEdit(SuccessMessageMixin, SinPrivilegios, generic.UpdateView):
         return super().form_valid(form)
 
 
+#LANDING PAGE
+class Landing_Page(generic.TemplateView):
+    template_name='landing/index.html'
+
 #VISTA HOME TABLERO
 class Home(LoginRequiredMixin, generic.ListView):
     template_name='base/home.html'

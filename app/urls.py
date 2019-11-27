@@ -20,11 +20,11 @@ from django.urls import path, include
 urlpatterns = [
 
     path('', include(('bases.urls', 'bases'), namespace='bases')),
-    path('inv/', include(('inv.urls', 'inv'), namespace='inv')),
-    path('cmp/', include(('cmp.urls', 'cmp'), namespace='cmp')),
-    path('fac/', include(('fac.urls', 'fac'), namespace='fac')),
-    path('api/', include(('api.urls', 'api'), namespace='api')),
-    path('usuario/', include(('usr.urls', 'usr'), namespace='usr')),
+    path('gtl/inv/', include(('inv.urls', 'inv'), namespace='inv')),
+    path('gtl/cmp/', include(('cmp.urls', 'cmp'), namespace='cmp')),
+    path('gtl/fac/', include(('fac.urls', 'fac'), namespace='fac')),
+    path('gtl/api/', include(('api.urls', 'api'), namespace='api')),
+    path('gtl/usuario/', include(('usr.urls', 'usr'), namespace='usr')),
 
-    path('admin/', admin.site.urls),
+    path('gtl/admin/', admin.site.urls),
 ]

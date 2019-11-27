@@ -7,23 +7,22 @@ from rest_framework.authtoken import views
 from api.views import Login,Logout
 
 from bases.views import Home, HomeSinPrivilegios, NotificacionView, notificacion_leer, NotificacionNew, notificacion_read
-from .views import CustomAuthToken
+from .views import CustomAuthToken, Landing_Page
 
 
 urlpatterns = [
-    path('',Home.as_view(), name='home'),
-    #path('login/', auth_views.LoginView.as_view(template_name='base/login.html'), name='login'),
-    #path('logout/', auth_views.LogoutView.as_view(template_name='base/login.html'), name='logout'),
-    path('login/',Login.as_view(), name = 'login'),
-    path('logout/', Logout.as_view(), name = 'logout'),
-    path('api_generate_token/', CustomAuthToken.as_view(), name='api_generate_token'),
+    path('',Landing_Page.as_view(), name='index'),
+    path('gtl/',Home.as_view(), name='home'),
+    path('gtl/login/',Login.as_view(), name = 'login'),
+    path('gtl/logout/', Logout.as_view(), name = 'logout'),
+    path('gtl/api_generate_token/', CustomAuthToken.as_view(), name='api_generate_token'),
     
-    path('sin_privilegios/',HomeSinPrivilegios.as_view(), name='sin_privilegios'),
+    path('gtl/sin_privilegios/',HomeSinPrivilegios.as_view(), name='sin_privilegios'),
 
-    path('notify/', NotificacionView.as_view(), name='notificacion_list'),
-    path('notify/new', NotificacionNew.as_view(), name='notificacion_new'),
-    path('notify/leer/<int:id>', notificacion_leer, name='notificacion_leer'),
-    path('notify/read/<int:id>', notificacion_read, name='notificacion_read'),
+    path('gtl/notify/', NotificacionView.as_view(), name='notificacion_list'),
+    path('gtl/notify/new', NotificacionNew.as_view(), name='notificacion_new'),
+    path('gtl/notify/leer/<int:id>', notificacion_leer, name='notificacion_leer'),
+    path('gtl/notify/read/<int:id>', notificacion_read, name='notificacion_read'),
 
 ]
 
