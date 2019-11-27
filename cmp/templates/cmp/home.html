@@ -1,0 +1,193 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block page_head %}
+<!-- Custom fonts for this template-->
+<link href="{% static 'base/css/menularge.css' %}" rel="stylesheet" type="text/css">
+<!-- <style type="text/css">
+    .portada{
+        background: url({% static 'base\img\cmp_bg.png' %}) no-repeat fixed center;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        height: 100%;
+        width: 100% ;
+        text-align: center;
+    }
+</style> -->
+
+{% endblock page_head %}
+
+{% block page_content %}
+    {% block menu_compras%}
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <a href="#" class="navbar-brand font-weight-bold d-block d-lg-none">Compras</a>
+        <button type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbars" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler"><span class="navbar-toggler-icon"></span></button>
+        
+        <div id="navbarContent" class="collapse navbar-collapse">
+          <ul class="navbar-nav">
+            <!-- Megamenu-->
+            <li class="nav-item dropdown megamenu"><a id="megamenu" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle text-uppercase font-weight-bold">Proveedores</a>
+              <div aria-labelledby="megamenu" class="dropdown-menu border-0 p-0 m-0">
+                <div class="container">
+                  <div class="row bg-white rounded-0 m-0 shadow-sm">
+                    <div class="col-lg-7 col-xl-8">
+                      <div class="p-4">
+                        <div class="row">
+                          <div class="col-lg-6 mb-4">
+                            <h7 class="font-weight-bold text-uppercase">Proveedores</h7>
+                            <ul class="list-unstyled">
+                              <li class="nav-item"><a href="{% url 'cmp:compra_list' %}" class="nav-link text-small pb-0">Administrar Proveedores</a></li>
+                            </ul>
+                          </div>
+                          <div class="col-lg-6 mb-4">
+                            <h7 class="font-weight-bold text-uppercase">Cuentas Corrientes</h7>
+                            <ul class="list-unstyled">
+                              <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Resúmen de Cuenta</a></li>
+
+                              <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Subdiario por Vencimiento</a></li>
+                            </ul>
+                          </div>
+                          <div class="col-lg-6 mb-4">
+                            <h7 class="font-weight-bold text-uppercase">Reportes</h7>
+                            <ul class="list-unstyled">
+                              <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Listado de Proveedores</a></li>
+                              
+                            </ul>
+                          </div>
+                          
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-lg-5 col-xl-4 px-0 d-none d-lg-block" style="background: center center url('{% static 'base\img\cmp_acuerdo.jpg' %}') no-repeat; background-size: cover;"></div>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <!-- Megamenu Movimientos-->
+            <li class="nav-item dropdown megamenu"><a id="megamenu" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle font-weight-bold text-uppercase">Movimientos</a>
+                <div aria-labelledby="megamenu" class="dropdown-menu border-0 p-0 m-0">
+                  <div class="container">
+                    <div class="row bg-white rounded-0 m-0 shadow-sm">
+                      <div class="col-lg-7 col-xl-8">
+                        <div class="p-4">
+                          <div class="row">
+                            <div class="col-lg-6 mb-4">
+                              <h7 class="font-weight-bold text-uppercase">Comprobantes de Compra</h7>
+                              <ul class="list-unstyled">
+                                <li class="nav-item"><a href="{% url 'cmp:compra_list' %}" class="nav-link text-small pb-0">Cargar Comprobantes</a></li>
+                                <li class="nav-item"><a href="{% url 'cmp:compra_list' %}" class="nav-link text-small pb-0">Administrar Comprobantes</a></li>
+                                
+                              </ul>
+                            </div>
+                            <div class="col-lg-6 mb-4">
+                              <h7 class="font-weight-bold text-uppercase">Orden de Pago</h7>
+                              <ul class="list-unstyled">
+                                <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Emitir Orden de Pago</a></li>
+  
+                                <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Administrar Ordenes de Pago</a></li>
+                              </ul>
+                            </div>
+                            <div class="col-lg-6 mb-4">
+                              <h7 class="font-weight-bold text-uppercase">Pedidos</h7>
+                              <ul class="list-unstyled">
+                                <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Emitir Nota de Pedido</a></li>
+                                <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Administrar Notas de Pedido</a></li>
+                              </ul>
+                            </div>
+                            
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col-lg-5 col-xl-4 px-0 d-none d-lg-block" style="background: center center url({% static 'base\img\cmp_compras.jpg' %})no-repeat; background-size: cover;"></div>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            <!-- Megamenu Movimientos-->
+            <li class="nav-item dropdown megamenu"><a id="megamenu" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle font-weight-bold text-uppercase">Percepciones y Retenciones</a>
+                <div aria-labelledby="megamenu" class="dropdown-menu border-0 p-0 m-0">
+                <div class="container">
+                    <div class="row bg-white rounded-0 m-0 shadow-sm">
+                    <div class="col-lg-7 col-xl-8">
+                        <div class="p-4">
+                        <div class="row">
+                            <div class="col-lg-6 mb-4">
+                            <h7 class="font-weight-bold text-uppercase">Ingresos Brutos</h7>
+                            <ul class="list-unstyled">
+                                <li class="nav-item"><a href="{% url 'cmp:compra_list' %}" class="nav-link text-small pb-0">Comprobantes Percepciones IIBB</a></li>
+                                <li class="nav-item"><a href="{% url 'cmp:compra_list' %}" class="nav-link text-small pb-0">Comprobantes Retencion IIBB</a></li>
+                                <li class="nav-item"><a href="{% url 'cmp:compra_list' %}" class="nav-link text-small pb-0">Comprobantes Retenciones Bancarias IIBB</a></li>
+                            </ul>
+                            </div>
+                            <div class="col-lg-6 mb-4">
+                            <h7 class="font-weight-bold text-uppercase">I.V.A.</h7>
+                            <ul class="list-unstyled">
+                                <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Comprobantes Retencion I.V.A.</a></li>
+
+                                <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Comprobantes Percepcion I.V.A.</a></li>
+                            </ul>
+                            </div>
+                            <div class="col-lg-6 mb-4">
+                            <h7 class="font-weight-bold text-uppercase">SICORE</h7>
+                            <ul class="list-unstyled">
+                                <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Retenciones SICORE</a></li>
+                            </ul>
+                            </div>
+                            
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-xl-4 px-0 d-none d-lg-block" style="background: center center url({% static 'base\img\cmp_impuestos.jpg' %})no-repeat; background-size: cover;"></div>
+                    </div>
+                </div>
+                </div>
+            </li>
+            <!-- Megamenu Movimientos-->
+            <li class="nav-item dropdown megamenu"><a id="megamenu" href="" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="nav-link dropdown-toggle font-weight-bold text-uppercase">Reportes</a>
+                <div aria-labelledby="megamenu" class="dropdown-menu border-0 p-0 m-0">
+                <div class="container">
+                    <div class="row bg-white rounded-0 m-0 shadow-sm">
+                    <div class="col-lg-7 col-xl-8">
+                        <div class="p-4">
+                        <div class="row">
+                            <div class="col-lg-6 mb-4">
+                            <h7 class="font-weight-bold text-uppercase">Subdiarios</h7>
+                            <ul class="list-unstyled">
+                                <li class="nav-item"><a href="{% url 'cmp:compra_list' %}" class="nav-link text-small pb-0">Subdiario IVA Compras</a></li>
+                                <li class="nav-item"><a href="{% url 'cmp:compra_list' %}" class="nav-link text-small pb-0">Subdiario/Resúmen Percepciones</a></li>
+                                <li class="nav-item"><a href="{% url 'cmp:compra_list' %}" class="nav-link text-small pb-0">Subdiario Compras por Imputación</a></li>
+                                <li class="nav-item"><a href="{% url 'cmp:compra_list' %}" class="nav-link text-small pb-0">Subdiario Pagos</a></li>
+                            </ul>
+                            </div>
+                            <div class="col-lg-6 mb-4">
+                            <h7 class="font-weight-bold text-uppercase">Pedidos</h7>
+                            <ul class="list-unstyled">
+                                <li class="nav-item"><a href="" class="nav-link text-small pb-0 ">Resúmen de Pedidos Pendientes</a></li>
+                            </ul>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 col-xl-4 px-0 d-none d-lg-block" style="background: center center url({% static 'base\img\cmp_reportes.jpg' %})no-repeat; background-size: cover;"></div>
+                    </div>
+                </div>
+                </div>
+            </li>
+            <li class="nav-item"><a href="{% url 'bases:home' %}" class="nav-link font-weight-bold text-uppercase">Volver</a></li>
+          </ul>
+        </div>
+      </nav>
+    {% endblock menu_compras%}
+
+    {% block page_content_compras %}
+        <div class="">
+
+          <!-- Page Heading -->
+          <img src="{% static 'base\img\cmp_bg.png' %}" class="img-fluid" alt="Responsive image">
+
+        </div>
+    {% endblock page_content_compras %}
+
+{% endblock %}
