@@ -192,6 +192,15 @@
           text:      '<i class="fas fa-file-pdf"></i> ',
           titleAttr: 'Exportar a PDF',
           className: 'btn btn-secondary'
+        },
+        {
+          extend:    'colvis',
+          columnText: function ( dt, idx, title ) {
+            return (idx+1)+': '+title;
+          },
+          text:      '<i class="fas fa-columns"></i> ',
+          titleAttr: 'Ocultar Columnas',
+          className: 'btn btn-secondary'
         }
       ]
       
