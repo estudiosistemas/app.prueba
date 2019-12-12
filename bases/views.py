@@ -16,8 +16,8 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
-from .models import Notificacion
-from .forms import NotificacionForm
+from .models import Notificacion, Provincia
+from .forms import NotificacionForm, ProvinciaForm
 from usr.models import Profile
 
 class SinPrivilegios(LoginRequiredMixin, PermissionRequiredMixin):
@@ -50,7 +50,7 @@ class VistaBaseEdit(SuccessMessageMixin, SinPrivilegios, generic.UpdateView):
     success_message = 'Registro Actualizado Satisfactoriamente'   
 
     def form_valid(self, form):
-        form.instance.um = self.request.user.id
+        form.instance.um = self.request.user
         return super().form_valid(form)
 
 
@@ -123,14 +123,6 @@ def notificacion_read(request, id):
     return render(request,template_name, contexto)
 
 
-# class UserProfile(VistaBaseEdit):
-#     permission_required = ''
-#     model = UserProfileForm
-#     template_name='base/profile_form.html'
-#     form_class=UserProfile
-#     success_url=reverse_lazy('bases:home')
-
-
 #Sobreescribo la clase para generer token, y devuelvo tambien el id_del usuario
 class CustomAuthToken(ObtainAuthToken):
 
@@ -145,3 +137,47 @@ class CustomAuthToken(ObtainAuthToken):
             'user_id': user.pk,
             #'email': user.email
         })
+
+
+# Vista Provincias
+class ProvinciasView(SinPrivilegios, generic.ListView ):
+    permission_required = 'bases.view_provincia'
+    model = Provincia
+    template_name = 'base/provincia_list.html'
+    context_object_name = 'obj'
+
+class ProvinciaNew(VistaBaseCreate):
+    permission_required = 'bases.add_provincia'
+    model = Provincia
+    template_name='base/provincia_form.html'
+    form_class=ProvinciaForm
+    success_url=reverse_lazy('bases:provincias_list')
+
+class ProvinciaEdit(VistaBaseEdit):
+    permission_required = 'bases.change_Provincia'
+    model = Provincia
+    template_name='base/provincia_form.html'
+    form_class=ProvinciaForm
+    success_url=reverse_lazy('bases:provincias_list')
+
+
+@login_required(login_url='/login/')
+@permission_required('bases.change_provincia', login_url='bases:sin_privilegios')
+def provincia_inactivar(request, id):
+    template_name='base/provincia_inactivar.html'
+    contexto={}
+    print('ACA')
+    prv = Provincia.objects.filter(pk=id).first()
+    if not prv:
+        return HttpResponse('Provincia no existe')
+
+    if request.method=='GET':
+        contexto={'obj': prv}
+
+    if request.method=='POST':
+        prv.estado=False
+        prv.save()
+        contexto={'obj':'OK'}
+        return HttpResponse('Provincia Inactivada')
+
+    return render(request,template_name, contexto)

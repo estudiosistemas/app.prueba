@@ -197,17 +197,22 @@ class ProductoNew(SinPrivilegios, generic.CreateView):
         form.instance.uc = self.request.user
         return super().form_valid(form)
 
-class ProductoEdit(SinPrivilegios, generic.UpdateView):
+
+class ProductoEdit(VistaBaseEdit):
     permission_required = 'inv.change_producto'
     model = Producto
     template_name='inv/producto_form.html'
-    context_object_name='obj'
     form_class=ProductoForm
     success_url=reverse_lazy('inv:producto_list')
 
-    def form_valid(self, form):
-        form.instance.um = self.request.user.id
-        return super().form_valid(form)
+    def form_invalid(self, form):
+        print("form is invalid")
+        return super().form_invalid(form)
+        
+
+    
+
+
 
 @login_required(login_url='/login/')
 @permission_required('inv.change_producto', login_url='bases:sin_privilegios')

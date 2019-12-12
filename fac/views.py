@@ -22,11 +22,11 @@ import inv.views as inv
 from .factura_electronica import facturar
 
 
-class ClienteView(SinPrivilegios, generic.ListView ):
+class ClienteView(SinPrivilegios, generic.TemplateView ):
     permission_required = 'fac.view_cliente'
-    model = Cliente
+    #model = Cliente
     template_name = 'fac/cliente_list.html'
-    context_object_name = 'obj'
+    #context_object_name = 'obj'
 
 
 class ClienteNew(VistaBaseCreate):

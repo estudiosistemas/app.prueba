@@ -1,5 +1,11 @@
 {% extends 'base/base.html' %}
 
+{% block page_head%}
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+  
+
+{% endblock %}
+
 {% block page_content %}
 <div class="card shadow mb-4">
     <!-- Card Header - Dropdown -->
@@ -20,7 +26,7 @@
       {% if not obj %}
         <div class="alert alert-info">No hay Proveedores</div>
       {% endif %}
-      <table id="tblProveedores" class="table table-striped table-hover dt-responsive nowrap" style="100%">
+      <table id="tblProveedores" class="table table-hover dt-responsive display nowrap" style="100%">
             <thead>
                 <th>Id</th>
                 <th>Descripción</th>
@@ -34,21 +40,23 @@
             <tbody>
                 {% for item in obj %}
                 <tr>
+                  
                     <td>{{ item.id }}</td>
                     <td>{{ item.descripcion }}</td>
                     <td>{{ item.direccion }}</td>
                     <td>{{ item.contacto }}</td>
                     <td>{{ item.telefono }}</td>
                     <td>{{ item.email }}</td>
-                    <td>{{ item.estado|yesno:"Activo, Inactivo" }}</td>
-                    <td>
-                        <button class="btn btn-warning btn-sm" 
-                        onclick="return abrir_modal('{% url 'cmp:proveedor_edit' item.id %}')">
-                        <i class="fa fa-edit"></i></button>
-                        <button class="btn btn-danger btn-sm" 
-                        onclick="return abrir_modal('{% url 'cmp:proveedor_inactivar' item.id %}')">
-                        <i class="far fa-thumbs-down"></i></button>
-
+                    <td>{{ item.estado }}</td>
+                    <td><div class="row">
+                        <div class="col-2"><a class="text-primary" title="Editar" href="#" onclick="return abrir_modal('{% url 'cmp:proveedor_edit' item.id %}')"><i class="fa fa-edit"></i></a></div>
+                        <div class="col-2">
+                        {% if item.estado %}
+                        <a class="text-danger" title="Inactivar" href="#" onclick="return abrir_modal('{% url 'cmp:proveedor_inactivar' item.id %}')"><i class="fas fa-ban"></i></a>
+                        {% else %}
+                        <a class="text-success" title="Activar" href="#" onclick="return abrir_modal('{% url 'cmp:proveedor_inactivar' item.id %}')"><i class="fas fa-check"></i></i></a>
+                        {% endif %}
+                        </div></div>
                     </td>
                 </tr>
                 {% endfor %}
@@ -61,8 +69,79 @@
 {% endblock %}
 
 {% block js_page %}
+ 
 <script>
-  $(document).ready(function() {
+  
+
+  function filtrar(){
+    var filtro = $('[name="filter"]').val();
+    var tabla = $('.table').DataTable();
+    if (filtro=='activos'){
+      tabla.column(6).search('True', true, false).draw();
+    }else{
+      tabla.column(6).search('', true, false).draw()
+    }
+  }
+
+  function cambiarEstado(id, estado){
+    var tabla = $('.table').DataTable();
+    // Find indexes of rows which have `Yes` in the second column
+    var indexes = tabla.rows().eq( 0 ).filter( function (rowIdx) {
+        return tabla.cell( rowIdx, 0 ).data() == id ? true : false;
+    } );
+
+    var miURL3 = '{% url 'cmp:proveedor_edit' 0 %}'.replace('0', id);
+
+    var accion="<div class='row'><div class='col-2'><a class='text-primary' title='Editar' href='#' onclick='return abrir_modal(\""+miURL3+"\")'><i class='fa fa-edit'></i></a></div><div class='col-2'>";
+
+    var miURL2 = '{% url 'cmp:proveedor_inactivar' 0 %}'.replace('0', id);
+
+    if (estado === 'True'){
+      accion=accion+"<a class='text-danger' title='Inactivar' href='#' onclick='return abrir_modal(\""+miURL2+"\")'><i class='fas fa-ban'></i></a></div></div>";
+    }else{
+      accion=accion+"<a class='text-success' title='Activar' href='#' onclick='return abrir_modal(\""+miURL2+"\")'><i class='fas fa-check'></i></a></div></div>";
+    };
+    tabla.cell( indexes,6 ).data(estado).draw();
+    tabla.cell( indexes,7 ).data(accion).draw();
+    filtrar();
+
+  }
+
+  //function mostrarModal(url){
+  //  abrir_modal(url);
+  //};
+
+  //function changeState(url, id, estado){
+  // var stack = $.Callbacks();
+  //  stack.add( mostrarModal );
+  //  stack.fire( url ); 
+  //  stack.add( cambiarEstado );
+  //  stack.fireWith(window, [id, estado] );
+  //  stack.empty();
+    //$.when(mostrarModal(url)).then(cambiarEstado(id,'false'));
+  //};
+
+  //function activar(url, id){
+  //  alert(url+" "+id );
+  //  var stack = $.Callbacks();
+  //  stack.add( mostrarModal );
+  //  stack.fire( url ); 
+  //  stack.add( cambiarEstado );
+  //  stack.fire( id,'true' );
+  //  stack.empty();
+    //$.when(mostrarModal(url)).then(cambiarEstado(id,'true'));
+  //};
+
+  $.fn.dataTable.ext.buttons.agregar = {  
+      text: '<i class="fas fa-plus"></i> ',
+      className: 'btn btn-success',
+      titleAttr: 'Agregar',
+      action: function ( e, dt, node, config ) {
+          abrir_modal('{% url 'cmp:proveedor_new' %}');
+      }
+  };
+
+  function crearTabla(){
     $('.table').DataTable({
       "language":{
         "sProcessing": "Procesando...",
@@ -86,9 +165,58 @@
         "oAria": {
           "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
           "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+        },
+      },
+      "columnDefs": [
+        { "visible": false, "targets": 6 }
+      ],
+      dom: "<'row'<'col-sm-9'B<'toolbar'>><'col-sm-3'f>>rtilp",
+      responsive: 'true',
+
+      buttons: [ 
+        'agregar',     
+			  {
+          extend:    'print',
+          text:      '<i class="fa fa-print"></i> ',
+          titleAttr: 'Imprimir',
+          className: 'btn btn-secondary'
+			  },
+        {
+          extend:    'excelHtml5',
+          text:      '<i class="fas fa-file-excel"></i> ',
+          titleAttr: 'Exportar a Excel',
+          className: 'btn btn-secondary'
+        },
+        {
+          extend:    'pdfHtml5',
+          text:      '<i class="fas fa-file-pdf"></i> ',
+          titleAttr: 'Exportar a PDF',
+          className: 'btn btn-secondary'
         }
-      }
+      ]
+      
+    });  
+
+    $("div.toolbar").html("<div class='row'><div class='col-3'><select id='select' class='form-control' name='filter'><option value='activos' selected>Solo Activos</option><option value='todos'>Todos</option></select></div></div>");
+  }
+
+  
+
+  $(document).ready(function() {
+
+    crearTabla();
+    var tabla = $('.table').DataTable();
+    tabla.column(6).search('True', true, false).draw();
+
+    $('[name="filter"]').change(function() {
+      filtrar();
     });
+
+    //$('#tblProveedores tbody').on( 'click', 'tr', function () {
+    //  var idx = tabla.row( this ).data()[0];
+    //  cambiarEstado(idx,'false');
+    //} );
+
   });
 </script>
 {% endblock %}

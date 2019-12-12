@@ -16,7 +16,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
-from rest_framework import generics
+from rest_framework import generics, viewsets
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication, BasicAuthentication
@@ -24,9 +24,10 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 
-from .serializers import ProductoSerializer, NotificacionSerializer
+from .serializers import ProductoSerializer, NotificacionSerializer, ProvinciaSerializer, ClienteSerializer
 from inv.models import Producto
-from bases.models import Notificacion
+from fac.models import Cliente
+from bases.models import Notificacion, Provincia
 from usr.models import Profile
 
 
@@ -101,3 +102,13 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
         Token.objects.create(user=instance)
 
 
+class ProvinciaList(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = Provincia.objects.all()
+    serializer_class = ProvinciaSerializer
+
+
+class ClienteList(generics.ListCreateAPIView):
+    permission_classes = (IsAuthenticated,)
+    queryset = Cliente.objects.all()
+    serializer_class = ClienteSerializer    

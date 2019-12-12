@@ -23,29 +23,20 @@
       <div class="buttons-toolbar">
         <a class="dropdown-item" onclick="return abrir_modal('{% url 'fac:cliente_new' %}')" href="#"><i class="far fa-calendar-plus"></i> Agregar</a>
       </div>
-      <table 
-        id="table"
-        data-locale="es-AR"
-        data-toggle="table"
-        data-pagination="true"
-        data-search="true"
-        data-show-columns="true"
-        data-show-export="true"
-        data-show-footer="true"
-        data-show-toggle="true"
-        data-show-fullscreen="true"
-        data-toolbar=".buttons-toolbar"
+      <table id="table" class="table" 
+        data-server-side="true" 
+        data-ajax="/gtl/api/v1/clientes/?format=datatables"
       >
             <thead>
-                <th data-sortable="true" data-field="id">Id</th>
-                <th data-sortable="true" data-field="nombres">Nombres</th>
-                <th data-sortable="true" data-field="apellidos">Apellidos</th>
-                <th data-sortable="true" data-field="tipo">Tipo</th>
-                <th data-field="celular">Teléfono</th>
-                <th data-field="estado">Estado</th>
-                <th class="all">Acciones</th>
+                <th data-data="id">Id</th>
+                <th data-data="nombres">Nombres</th>
+                <th data-data="apellidos">Apellidos</th>
+                <th data-data="tipo">Tipo</th>
+                <th data-data="celular">Teléfono</th>
+                <th data-data="estado">Estado</th>
+                {% comment %} <th class="all">Acciones</th> {% endcomment %}
             </thead>
-            <tbody>
+            {% comment %} <tbody>
                 {% for item in obj %}
                 <tr>
                     <td>{{ item.id }}</td>
@@ -69,7 +60,7 @@
                     </td>
                 </tr>
                 {% endfor %}
-            </tbody>
+            </tbody> {% endcomment %}
 
       </table>
       
@@ -87,7 +78,7 @@ function inactivar(id){
   $.ajax({
     headers : {"X-CSRFToken": token},
     type: "POST",
-    url: "/fac/clientes/estado/"+id,
+    url: "/gtl/fac/clientes/estado/"+id,
     data: data,
     success: function(response){
       if(response==="OK"){
@@ -105,33 +96,33 @@ function inactivar(id){
   });
 }
 
-  // $(document).ready(function() {
-  //   $('.table').DataTable({
-  //     "language":{
-  //       "sProcessing": "Procesando...",
-  //       "sLengthMenu": "Mostrar _MENU_ registros",
-  //       "sZeroRecords": "No se encontraron resultados",
-  //       "sEmptyTable": "Ningún dato disponible en esta tabla",
-  //       "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
-  //       "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-  //       "sInfoFilter": "(filtrando de un total de _MAX_ registros)",
-  //       "sInfoPostFix": "",
-  //       "sSearch": "Buscar:",
-  //       "sUrl": "",
-  //       "sInfoThousands": ",",
-  //       "sLoadingRecords": "Cargando...",
-  //       "oPaginate": {
-  //         "sFirst": "<span class='fa fa-angle-double-left'></span>",
-  //         "sLast": "<span class='fa fa-angle-double-right'></span>",
-  //         "sNext": "<span class='fa fa-angle-right'></span>",
-  //         "sPrevious": "<span class='fa fa-angle-left'></span>"
-  //       },
-  //       "oAria": {
-  //         "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-  //         "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-  //       }
-  //     }
-  //   });
-  // });
+  $(document).ready(function() {
+    $('.table').DataTable({
+      "language":{
+        "sProcessing": "Procesando...",
+        "sLengthMenu": "Mostrar _MENU_ registros",
+        "sZeroRecords": "No se encontraron resultados",
+        "sEmptyTable": "Ningún dato disponible en esta tabla",
+        "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+        "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+        "sInfoFilter": "(filtrando de un total de _MAX_ registros)",
+        "sInfoPostFix": "",
+        "sSearch": "Buscar:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Cargando...",
+        "oPaginate": {
+          "sFirst": "<span class='fa fa-angle-double-left'></span>",
+          "sLast": "<span class='fa fa-angle-double-right'></span>",
+          "sNext": "<span class='fa fa-angle-right'></span>",
+          "sPrevious": "<span class='fa fa-angle-left'></span>"
+        },
+        "oAria": {
+          "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+          "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+        }
+      }
+    });
+  });
 </script>
 {% endblock %}

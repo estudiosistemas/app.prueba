@@ -76,6 +76,17 @@ def proveedor_inactivar(request, id):
     return render(request,template_name, contexto)
 
 
+@login_required(login_url='/login/')
+@permission_required('inv.change_proveedor', login_url='bases:sin_privilegios')
+def proveedor_activar(request, id):
+    pro = Proveedor.objects.filter(pk=id).first()
+    if request.method=='POST':
+        if pro:
+            pro.estado= not pro.estado 
+            pro.save()
+            return HttpResponse('OK')
+        return HttpResponse('FAIL')
+    return HttpResponse('FAIL')
  
 class ComprasView(SinPrivilegios, generic.ListView ):
     permission_required = 'cmp.view_comprasenc'

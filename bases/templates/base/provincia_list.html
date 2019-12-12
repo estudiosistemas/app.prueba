@@ -1,0 +1,147 @@
+{% extends 'base/base.html' %}
+
+{% block page_content %}
+<div class="card shadow mb-4">
+    <!-- Card Header - Dropdown -->
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">Listado de Provincias</h6>
+    </div>
+    <!-- Card Body -->
+    <div class="card-body">
+      {% if not obj %}
+        <div class="alert alert-info">No hay Provincias Cargadas</div>
+      {% endif %}
+      <div class="buttons-toolbar">
+        <div class="row">
+        <div class="col-3">
+        <a class="btn btn-outline-secondary" onclick="return abrir_modal('{% url 'bases:provincias_new' %}')" href="#" title="Agregar"><i class="fas fa-plus"></i></a>
+        </div>
+        <div class="col-9">
+        <select id="select" class="form-control" name="filter">
+          <option value="activos" selected>Solo Activos</option>
+          <option value="todos">Todos</option>
+        </select>
+        </div>
+        </div>
+      </div>
+      <table id="table">
+        <thead>
+          <th data-radio="true"></th>
+          <th data-sortable="true" data-field="codigo">Código</th>
+          <th data-sortable="true" data-field="nombre">Provincia</th>
+          <th data-field="estado">Estado</th>
+          <th data-formatter="operateFormatter"
+              data-events="operateEvents" 
+              data-field="acciones">Acciones</th>
+        </thead>
+      </table>
+      
+    </div>
+  </div>
+{% endblock %}
+
+{% block js_page %}
+  <script src="https://unpkg.com/tableexport.jquery.plugin/tableExport.min.js"></script>
+  <script src="https://unpkg.com/tableexport.jquery.plugin/libs/jsPDF/jspdf.min.js"></script>
+  <script src="https://unpkg.com/tableexport.jquery.plugin/libs/jsPDF-AutoTable/jspdf.plugin.autotable.js"></script>
+  <script src="https://unpkg.com/bootstrap-table@1.15.5/dist/bootstrap-table.min.js"></script>
+  <script src="https://unpkg.com/bootstrap-table@1.15.5/dist/extensions/export/bootstrap-table-export.min.js"></script>
+  <script src="https://unpkg.com/bootstrap-table@1.15.5/dist/extensions/print/bootstrap-table-print.min.js"></script>
+
+  <script>
+    var $table = $('#table');
+
+    function operateFormatter(value, row, index) {
+      return [
+        '<a class="edit" href="javascript:void(0)" title="Modificar">',
+        '<i class="fa fa-edit"></i>',
+        '</a>  ',
+        '<a class="remove" href="javascript:void(0)" title="Inactivar">',
+        '<i class="fa fa-trash"></i>',
+        '</a>'
+      ].join('')
+    }
+
+    window.operateEvents = {
+      'click .edit': function (e, value, row, index) {
+        var miURL = '{% url 'bases:provincias_edit' 0 %}'.replace('0', row.codigo);
+        abrir_modal(miURL)
+      },
+      'click .remove': function (e, value, row, index) {
+        var miURL = '{% url 'bases:provincia_inactivar' 0 %}'.replace('0', row.codigo);
+        abrir_modal(miURL)
+      }
+    }
+
+    function actualizarDato() {
+      var index = [];
+      $('input[name="selectItemName"]:checked').each(function () {
+        index.push($(this).data('index'))
+      });
+      
+      $table.bootstrapTable('updateCell', {
+        index: index.join(', '),
+        field: 'estado',
+        value: 'Inactivo'
+      });
+
+      filtrar();
+
+    }
+
+    function filtrar(){
+      var filtro = $('[name="filter"]').val();
+      if (filtro=='activos'){
+        $table.bootstrapTable('filterBy', {
+          estado: ['Activo','']
+        });}else{
+        $table.bootstrapTable('filterBy', {});
+      };
+    }
+
+    function initTable() {
+      var datos = [
+        {% for item in obj %}
+        {
+          'codigo': '{{ item.codigo }}',
+          'nombre': '{{ item.nombre }}',
+          'estado': '{{ item.estado|yesno:"Activo, Inactivo" }}'
+        },
+        {% endfor %}
+      ];
+
+      $table.bootstrapTable('destroy').bootstrapTable({
+        data: datos,
+        //url: '{% url 'api:provincia_list' %}',
+        //height: 550,
+        exportTypes: ['excel', 'pdf'],
+        locale: 'es-AR',
+        toggle: 'table',
+        pagination: true,
+        showButtonIcons: true,
+        showFooter: true,
+        showFullscreen: true,
+        showColumns: true, 
+        showExport: true, 
+        showPrint: true,
+        search: true,
+        showSearchButton: true, 
+        searchOnEnterKey: true, 
+        clickToSelect: true, 
+        singleSelect: true,
+        selectItemName: 'selectItemName',
+        toolbar: '.buttons-toolbar'
+      })      
+    }
+
+    $(document).ready(function() {
+        initTable();
+        filtrar();
+
+        $('[name="filter"]').change(function() {
+          filtrar();
+        });
+      })
+
+  </script>
+{% endblock %}

@@ -7,14 +7,22 @@
           <div class="card-body">
             <div class="row no-gutters align-items-center">
               <div class="col mr-2">
-                <div class="text-xs font-weight-bold text-warning text-uppercase">
-                  <div class="alert">
-                    ¿ Inactivar <b>{{ obj.descripcion }} ?</b>
-                  </div>
+                <div class="text-sm font-weight-bold text-warning text-uppercase">
+                  {% if obj.estado %}
+                  <div class="alert">¿ Desea Inactivar <b>{{ obj.descripcion }} ?</b></div>
+                  {% else %}
+                  <div class="alert">¿ Desea Activar <b>{{ obj.descripcion }} ?</b></div>
+                  {% endif %}
                 </div>
               </div>
               <div class="row">
-                <button type="button" class="btn btn-danger" id="btnInactivar"><i class="fas fa-question-circle"></i>Si, Inactivar></button>
+                <button type="button" class="btn btn-danger" id="btnInactivar"><i class="fas fa-question-circle"></i>
+                {% if obj.estado %}
+                Si, Inactivar
+                {% else %}
+                Si, Activar
+                {% endif %}
+                </button>
                 <button class="btn btn-success" onclick="return cerrar_modal()">No,
                   Cancelar</button>
               </div>
@@ -29,27 +37,62 @@
 <script>
 $(document).ready(function(){
 
-  function refreshTable(){
+  /*function refreshTable(){
     $( "#tblProveedores" ).load( "{% url 'cmp:proveedor_list' %} #tblProveedores" );
-  }
+  }*/
 
-  var token = $('input[name=csrfmiddlewaretoken]').val();
-  $.ajaxSetup({
-    beforeSend: function(xhr, settings) {
-      if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-        xhr.setRequestHeader("X-CSRFToken", token);
+  function activar(){
+    var id = {{ obj.id }};
+    var data = {"id":id};
+    var template="{% url 'cmp:proveedor_activar' obj.id %}";
+    data = JSON.stringify(data);
+    var token = '{{csrf_token}}';
+
+    $.ajax({
+      headers : {"X-CSRFToken": token},
+      type: "POST",
+      url: template,
+      data: data,
+      success: function(response){
+        if(response==="OK"){
+          {% if not obj.estado %}
+          mensaje('Activado correctamente', 'success');
+          cambiarEstado(id,'True');
+          {% else %}
+          mensaje('Inactivado correctamente', 'success');
+          cambiarEstado(id,'False');
+          {% endif %}
+        }
+        else{
+          mensaje('Error al cambiar estado', 'danger');
+        };
+        cerrar_modal();
+      },
+      error: function(jrXHR, textStatus, errorThrow){
+        console.log(textStatus, errorThrow);
+        mensaje(errorThrow, 'danger');
+        cerrar_modal();
       }
+      });
     }
 
-  });
+  //var token = $('input[name=csrfmiddlewaretoken]').val();
+  //$.ajaxSetup({
+  //  beforeSend: function(xhr, settings) {
+  //    if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+  //      xhr.setRequestHeader("X-CSRFToken", token);
+  //    }
+  //  }
+  //});
 
   $("#btnInactivar").click(function(e){
     e.preventDefault();
+    activar();
     //alert("Probando");
 
-    var id = {{ obj.id }};
+    /*var id = {{ obj.id }};
     var template="{% url 'cmp:proveedor_inactivar' obj.id %}";
-    var data={"id":id}
+    var data={"id":id};
     data = JSON.stringify(data);
 
     $.ajax({
@@ -62,16 +105,15 @@ $(document).ready(function(){
       success: function(response){
         console.log(response);
         cerrar_modal();
-        var tipo=(response.startsWith('Proveedor no existe ') ? 'red':'green' );
-        mensaje(response,tipo);
-        refreshTable();
+        var tipo=(response.startsWith('Proveedor no existe ') ? 'danger':'success' );
+        mensaje(response, tipo);        
       },
       error: function(jqXHR, textStatus, errorThrow){
         console.log(textStatus, errorThrow);
-        mensaje(errorThrow,'red');
+        mensaje(errorThrow,'danger');
         cerrar_modal();
       }
-    });   
+    });*/   
 
   });
 

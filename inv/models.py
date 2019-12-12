@@ -1,6 +1,6 @@
 from django.db import models
 
-from bases.models import ClaseModelo
+from bases.models import ClaseModelo, MyModel
 
 
 class Categoria(ClaseModelo):
@@ -74,7 +74,7 @@ class UnidadMedida(ClaseModelo):
     class Meta:
         verbose_name_plural = "Unidades de Medida"
 
-class Producto(ClaseModelo):
+class Producto(MyModel):
     codigo = models.CharField(max_length=20, unique=True)
     codigo_barra = models.CharField(max_length=50)
     descripcion = models.CharField(max_length=200)

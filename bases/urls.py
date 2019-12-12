@@ -6,7 +6,7 @@ from django.conf.urls.static import static
 from rest_framework.authtoken import views
 from api.views import Login,Logout
 
-from bases.views import Home, HomeSinPrivilegios, NotificacionView, notificacion_leer, NotificacionNew, notificacion_read
+from bases.views import Home, HomeSinPrivilegios, NotificacionView, notificacion_leer, NotificacionNew, notificacion_read, ProvinciasView, ProvinciaNew, ProvinciaEdit, provincia_inactivar
 from .views import CustomAuthToken, Landing_Page
 
 
@@ -18,6 +18,11 @@ urlpatterns = [
     path('gtl/api_generate_token/', CustomAuthToken.as_view(), name='api_generate_token'),
     
     path('gtl/sin_privilegios/',HomeSinPrivilegios.as_view(), name='sin_privilegios'),
+
+    path('gtl/provincias/', ProvinciasView.as_view(), name='provincias_list'),
+    path('gtl/provincias/new', ProvinciaNew.as_view(), name='provincias_new'),
+    path('gtl/provincias/edit/<str:pk>', ProvinciaEdit.as_view(), name='provincias_edit'),
+    path('gtl/provincias/inactivar/<str:id>', provincia_inactivar, name='provincia_inactivar'),
 
     path('gtl/notify/', NotificacionView.as_view(), name='notificacion_list'),
     path('gtl/notify/new', NotificacionNew.as_view(), name='notificacion_new'),
