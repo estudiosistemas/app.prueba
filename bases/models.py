@@ -31,6 +31,7 @@ class Notificacion(MyModel):
     asunto = models.CharField(max_length=50)
     mensaje = models.CharField(max_length=200)
     user_destino = models.ForeignKey(User, on_delete=models.CASCADE)
+    leida = models.BooleanField(default=False)
 
     def __str__(self):
         return '{}'.format(self.mensaje)

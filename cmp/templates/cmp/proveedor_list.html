@@ -69,7 +69,7 @@
 {% endblock %}
 
 {% block js_page %}
- 
+
 <script>
   
 
@@ -107,33 +107,9 @@
 
   }
 
-  //function mostrarModal(url){
-  //  abrir_modal(url);
-  //};
-
-  //function changeState(url, id, estado){
-  // var stack = $.Callbacks();
-  //  stack.add( mostrarModal );
-  //  stack.fire( url ); 
-  //  stack.add( cambiarEstado );
-  //  stack.fireWith(window, [id, estado] );
-  //  stack.empty();
-    //$.when(mostrarModal(url)).then(cambiarEstado(id,'false'));
-  //};
-
-  //function activar(url, id){
-  //  alert(url+" "+id );
-  //  var stack = $.Callbacks();
-  //  stack.add( mostrarModal );
-  //  stack.fire( url ); 
-  //  stack.add( cambiarEstado );
-  //  stack.fire( id,'true' );
-  //  stack.empty();
-    //$.when(mostrarModal(url)).then(cambiarEstado(id,'true'));
-  //};
 
   $.fn.dataTable.ext.buttons.agregar = {  
-      text: '<i class="fas fa-plus"></i> ',
+      text: '<b>Nuevo</b> <i class="fas fa-plus"></i> ',
       className: 'btn btn-success',
       titleAttr: 'Agregar',
       action: function ( e, dt, node, config ) {
@@ -195,9 +171,7 @@
         },
         {
           extend:    'colvis',
-          columnText: function ( dt, idx, title ) {
-            return (idx+1)+': '+title;
-          },
+          //"columns": ':not(.noVis)',
           text:      '<i class="fas fa-columns"></i> ',
           titleAttr: 'Ocultar Columnas',
           className: 'btn btn-secondary'

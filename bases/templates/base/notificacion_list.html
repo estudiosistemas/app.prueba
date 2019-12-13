@@ -1,48 +1,40 @@
 {% extends 'base/base.html' %}
 
+{% block page_head%}
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+  
+
+{% endblock %}
+
 {% block page_content %}
-<div class="card shadow mb-4">
+<div class="card shadow mb-2 mt-4 ml-4 mr-4">
     <!-- Card Header - Dropdown -->
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
       <h6 class="m-0 font-weight-bold text-primary">Bandeja de Notificaciones Recibidas</h6>
-      <!-- <div class="dropdown no-arrow">
+      <div class="dropdown no-arrow">
         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
         </a>
-        <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+        <!-- <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
           <div class="dropdown-header">Acciones</div>
           <a class="dropdown-item" onclick="return abrir_modal('{% url 'bases:notificacion_new' %}')" href="#"><i class="far fa-calendar-plus"></i> Agregar</a>
-        </div>
-      </div> -->
+        </div> -->
+      </div>
     </div>
     <!-- Card Body -->
     <div class="card-body">
       {% if not obj %}
         <div class="alert alert-info">No hay Notificaciones</div>
       {% endif %}
-      <div class="buttons-toolbar">
-        <a class="dropdown-item" onclick="return abrir_modal('{% url 'bases:notificacion_new' %}')" href="#"><i class="far fa-calendar-plus"></i> Agregar</a>
-      </div>
-      <table
-        id="tblNotificaciones"
-        data-locale="es-AR"
-        data-toggle="table"
-        data-pagination="true"
-        data-search="true"
-        data-show-columns="true"
-        data-show-export="true"
-        data-show-footer="true"
-        data-show-toggle="true"
-        data-show-fullscreen="true"
-        data-toolbar=".buttons-toolbar"
-      >
+      <table id="tblRecibidas" class="table table-hover table-sm dt-responsive display nowrap" style="100%">
             <thead>
-                <th data-sortable="true" data-field="id">Id</th>
-                <th data-sortable="true" data-field="uc">De</th>
-                <th data-sortable="true" data-field="fc">Fecha</th>
-                <th data-sortable="true" data-field="asunto">Asunto</th>
-                <th data-field="estado">Estado</th>
-                <th class="all">Acciones</th>
+                <th>Id</th>
+                <th>De</th>
+                <th>Fecha</th>
+                <th>Asunto</th>
+                <th>Estado</th>
+                <th>Estado Filtro</th>
+                <th>Acciones</th>
             </thead>
             <tbody>
                 {% for item in obj %}
@@ -61,17 +53,80 @@
                     <td>
                       <div onclick="leer({{item.id}})">
                         {% if item.estado %}
-                        <i class="fas fa-check text-primary"></i>
+                        <i class="fas fa-check text-primary" title="Marcar como leído"></i>
                         {% else %}
-                        <i class="fas fa-check-double text-success"></i>
+                        <i class="fas fa-check-double text-success" title="Marcar como no leído"></i>
                         {% endif %}
                     </div>
                     </td>
-
+                    <td>{{ item.estado }}</td>
                     <td>
-                        <button class="btn btn-warning btn-sm" 
-                        onclick="return abrir_modal('{% url 'bases:notificacion_read' item.id %}')">
-                        <i class="fab fa-readme"></i></button>
+                        <a class="text-warning" title="Leer notificación" href="#" onclick="return abrir_modal('{% url 'bases:notificacion_read' item.id %}')"><i class="fab fa-readme"></i></i></a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+      </table>
+      
+    </div>
+  </div>
+  <br>
+  <div class="card shadow mb-4 ml-4 mr-4">
+    <!-- Card Header - Dropdown -->
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">Bandeja de Notificaciones Enviadas</h6>
+      <div class="dropdown no-arrow">
+        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+        </a>
+        <!-- <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+          <div class="dropdown-header">Acciones</div>
+          <a class="dropdown-item" onclick="return abrir_modal('{% url 'bases:notificacion_new' %}')" href="#"><i class="far fa-calendar-plus"></i> Agregar</a>
+        </div> -->
+      </div>
+    </div>
+    <!-- Card Body -->
+    <div class="card-body">
+      {% if not enviadas %}
+        <div class="alert alert-info">No hay Notificaciones</div>
+      {% endif %}
+      <table id="tblEnviadas" class="table table-hover table-sm dt-responsive display nowrap" style="100%">
+            <thead>
+                <th>Id</th>
+                <th>Para</th>
+                <th>Fecha</th>
+                <th>Asunto</th>
+                <th>Estado</th>
+                <th>Estado Filtro</th>
+                <th>Acciones</th>
+            </thead>
+            <tbody>
+                {% for item in enviadas %}
+                <tr>
+                    {% if not item.leida %}
+                      <td><b>{{ item.id }}</b></td>
+                      <td><b>{{ item.user_destino }}</b></td>
+                      <td><b>{{ item.fc }}</b></td>
+                      <td><b>{{ item.asunto }}</b></td>
+                    {% else %}
+                      <td>{{ item.id }}</td>
+                      <td>{{ item.user_destino }}</td>
+                      <td>{{ item.fc }}</td>
+                      <td>{{ item.asunto }}</td>
+                    {% endif %}
+                    <td>
+                      <div>
+                        {% if not item.leida %}
+                        <i class="fas fa-check text-primary" title="Notificación No leida"></i>
+                        {% else %}
+                        <i class="fas fa-check-double text-success" title="Notificación Leida"></i>
+                        {% endif %}
+                    </div>
+                    </td>
+                    <td>{{ item.leida }}</td>
+                    <td>
+                      <a class="text-warning" title="Leer notificación" href="#" onclick="return abrir_modal('{% url 'bases:notificacion_read' item.id %}')"><i class="fab fa-readme"></i></i></a>
                     </td>
                 </tr>
                 {% endfor %}
@@ -84,15 +139,165 @@
 {% endblock %}
 
 {% block js_page %}
+
 <script>
-
-
-function mostrarModal(id){
+  
+  function mostrarModal(id){
   abrir_modal("/notify/read/" +id);
 }
 
 function mostrarMensaje(id){
   $.when(mostrarModal(id)).then(leer(id));
 }
+
+  function filtrar(){
+    var filtro = $('[name="filter"]').val();
+    var tabla = $('#tblRecibidas').DataTable();
+    if (filtro=='activos'){
+      tabla.column(5).search('True', true, false).draw();
+    }else{
+      tabla.column(5).search('', true, false).draw()
+    }
+  }
+
+    $.fn.dataTable.ext.buttons.agregar = {  
+      text: '<b>Nueva</b> <i class="fas fa-plus"></i> ',
+      className: 'btn btn-success',
+      titleAttr: 'Nueva notificación',
+      action: function ( e, dt, node, config ) {
+          abrir_modal('{% url 'bases:notificacion_new' %}');
+      }
+  };
+
+  function crearTablas(){
+    $('#tblRecibidas').DataTable({
+      "language":{
+        "sProcessing": "Procesando...",
+        "sLengthMenu": "Mostrar _MENU_ registros",
+        "sZeroRecords": "No se encontraron resultados",
+        "sEmptyTable": "Ningún dato disponible en esta tabla",
+        "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+        "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+        "sInfoFilter": "(filtrando de un total de _MAX_ registros)",
+        "sInfoPostFix": "",
+        "sSearch": "Buscar:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Cargando...",
+        "oPaginate": {
+          "sFirst": "<span class='fa fa-angle-double-left'></span>",
+          "sLast": "<span class='fa fa-angle-double-right'></span>",
+          "sNext": "<span class='fa fa-angle-right'></span>",
+          "sPrevious": "<span class='fa fa-angle-left'></span>"
+        },
+        "oAria": {
+          "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+          "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+        },
+      },
+      "columnDefs": [
+        { "visible": false, "targets": 5 }
+      ],
+      dom: "<'row'<'col-sm-9'B<'toolbar'>><'col-sm-3'f>>rtilp",
+      responsive: 'true',
+
+      buttons: [ 
+        'agregar',     
+			  {
+          extend:    'print',
+          text:      '<i class="fa fa-print"></i> ',
+          titleAttr: 'Imprimir',
+          className: 'btn btn-secondary'
+			  },
+        {
+          extend:    'excelHtml5',
+          text:      '<i class="fas fa-file-excel"></i> ',
+          titleAttr: 'Exportar a Excel',
+          className: 'btn btn-secondary'
+        },
+        {
+          extend:    'pdfHtml5',
+          text:      '<i class="fas fa-file-pdf"></i> ',
+          titleAttr: 'Exportar a PDF',
+          className: 'btn btn-secondary'
+        },
+        
+      ]
+      
+    });  
+
+    $("div.toolbar").html("<div class='row'><div class='col-3'><select id='select' class='form-control' name='filter'><option value='activos'>Sin leer</option><option value='todos' selected>Todas</option></select></div></div>");
+
+    $('#tblEnviadas').DataTable({
+      "language":{
+        "sProcessing": "Procesando...",
+        "sLengthMenu": "Mostrar _MENU_ registros",
+        "sZeroRecords": "No se encontraron resultados",
+        "sEmptyTable": "Ningún dato disponible en esta tabla",
+        "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+        "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+        "sInfoFilter": "(filtrando de un total de _MAX_ registros)",
+        "sInfoPostFix": "",
+        "sSearch": "Buscar:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Cargando...",
+        "oPaginate": {
+          "sFirst": "<span class='fa fa-angle-double-left'></span>",
+          "sLast": "<span class='fa fa-angle-double-right'></span>",
+          "sNext": "<span class='fa fa-angle-right'></span>",
+          "sPrevious": "<span class='fa fa-angle-left'></span>"
+        },
+        "oAria": {
+          "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+          "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+        },
+      },
+      "columnDefs": [
+        { "visible": false, "targets": 5 }
+      ],
+      dom: "<'row'<'col-sm-9'B<'toolbar'>><'col-sm-3'f>>rtilp",
+      responsive: 'true',
+
+      buttons: [ 
+        'agregar',     
+			  {
+          extend:    'print',
+          text:      '<i class="fa fa-print"></i> ',
+          titleAttr: 'Imprimir',
+          className: 'btn btn-secondary'
+			  },
+        {
+          extend:    'excelHtml5',
+          text:      '<i class="fas fa-file-excel"></i> ',
+          titleAttr: 'Exportar a Excel',
+          className: 'btn btn-secondary'
+        },
+        {
+          extend:    'pdfHtml5',
+          text:      '<i class="fas fa-file-pdf"></i> ',
+          titleAttr: 'Exportar a PDF',
+          className: 'btn btn-secondary'
+        },
+        
+      ]
+      
+    });  
+  }
+
+  
+
+  $(document).ready(function() {
+
+    crearTablas();
+    //var tabla = $('#tblRecibidas').DataTable();
+    //tabla.column(5).search('False', true, false).draw();
+
+    $('[name="filter"]').change(function() {
+      filtrar();
+    });
+
+    
+  });
 </script>
 {% endblock %}

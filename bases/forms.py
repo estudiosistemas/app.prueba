@@ -17,10 +17,10 @@ class MyModelForm(forms.ModelForm):
 
 
 class NotificacionForm(MyModelForm):
+    mensaje = forms.CharField( widget=forms.Textarea(attrs={"rows":3}) )
     class Meta:
         model = Notificacion
         fields=['user_destino', 'asunto','mensaje']
-        exclude = ['um', 'fm', 'uc', 'fc']
 
     
 

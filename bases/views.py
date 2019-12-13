@@ -85,6 +85,13 @@ class NotificacionView(SinPrivilegios, generic.ListView ):
         # filter by a variable captured from url, for example
         return qs.filter(user_destino = self.request.user.id)
 
+    def get_context_data(self, **kwargs):
+        # Llamamos ala implementacion primero del  context
+        context = super(NotificacionView, self).get_context_data(**kwargs)
+        # Agregamos el las notificaciones enviadas
+        context['enviadas'] = Notificacion.objects.filter(uc = self.request.user.id)
+        return context
+
 
 class NotificacionNew(VistaBaseCreate):
     permission_required = 'bases.add_notificacion'
@@ -93,6 +100,12 @@ class NotificacionNew(VistaBaseCreate):
     form_class=NotificacionForm
     success_url=reverse_lazy('bases:notificacion_list')
 
+# class NotificacionEdit(VistaBaseEdit):
+#     permission_required = 'bases.change_notificacion'
+#     model = Notificacion
+#     template_name='base/notificacion_form.html'
+#     form_class=NotificacionForm
+#     success_url=reverse_lazy('bases:notificacion_list')
 
 @login_required(login_url='/login/')
 @permission_required('bases.change_notificacion', login_url='bases:sin_privilegios')
@@ -100,7 +113,8 @@ def notificacion_leer(request, id):
     notif = Notificacion.objects.filter(pk=id).first()
     if request.method=='POST':
         if notif:
-            notif.estado= not notif.estado 
+            notif.estado= not notif.estado
+            notif.leida= not notif.leida 
             notif.save()
             return HttpResponse('OK')
         return HttpResponse('FAIL')
@@ -151,14 +165,14 @@ class ProvinciaNew(VistaBaseCreate):
     model = Provincia
     template_name='base/provincia_form.html'
     form_class=ProvinciaForm
-    success_url=reverse_lazy('bases:provincias_list')
+    success_url=reverse_lazy('bases:provincia_list')
 
 class ProvinciaEdit(VistaBaseEdit):
     permission_required = 'bases.change_Provincia'
     model = Provincia
     template_name='base/provincia_form.html'
     form_class=ProvinciaForm
-    success_url=reverse_lazy('bases:provincias_list')
+    success_url=reverse_lazy('bases:provincia_list')
 
 
 @login_required(login_url='/login/')
@@ -166,7 +180,6 @@ class ProvinciaEdit(VistaBaseEdit):
 def provincia_inactivar(request, id):
     template_name='base/provincia_inactivar.html'
     contexto={}
-    print('ACA')
     prv = Provincia.objects.filter(pk=id).first()
     if not prv:
         return HttpResponse('Provincia no existe')
