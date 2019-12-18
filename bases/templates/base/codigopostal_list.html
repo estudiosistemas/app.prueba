@@ -1,0 +1,199 @@
+{% extends 'base/base.html' %}
+
+<!-- {% block page_head%}
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css">
+  
+
+{% endblock %} -->
+
+{% block page_content %}
+<div class="card shadow mb-4">
+    <!-- Card Header - Dropdown -->
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+      <h6 class="m-0 font-weight-bold text-primary">Listado de Códigos Postales</h6>
+      <div class="dropdown no-arrow">
+        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+        </a>
+        <!-- <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+          <div class="dropdown-header">Acciones</div>
+          <a class="dropdown-item" onclick="return abrir_modal('{% url 'cmp:proveedor_new' %}')" href="#"><i class="far fa-calendar-plus"></i> Agregar</a>
+        </div> -->
+      </div>
+    </div>
+    <!-- Card Body -->
+    <div class="card-body">
+      {% if not obj %}
+        <div class="alert alert-info">No hay Códigos Postales Cargados</div>
+      {% endif %}
+      <table id="tblProvincias" class="table table-hover dt-responsive display nowrap" style="100%">
+            <thead>
+                <th class="text-center" style="width:80px">Código</th>
+                <th>Localidad</th>
+                <th>Provincia</th>
+                <th >Estado</th>
+                <th class="text-center" style="width:80px">Acciones</th>
+            </thead>
+            <tbody>
+                {% for item in obj %}
+                <tr>
+                  
+                    <td class="text-center" style="width:80px">{{ item.codigo }}</td>
+                    <td>{{ item.localidad }}</td>
+                    <td>{{ item.provincia }}</td>
+                    <td>{{ item.estado }}</td>
+                    <td><div class="row">
+                        <div class="col-2"><a class="text-primary" title="Editar" href="#" onclick="return abrir_modal('{% url 'bases:codigopostal_edit' item.codigo %}')"><i class="fa fa-edit"></i></a></div>
+                        <div class="col-2">
+                        {% if item.estado %}
+                        <a class="text-danger" title="Inactivar" href="#" onclick="return abrir_modal('{% url 'bases:codigopostal_inactivar' item.codigo %}')"><i class="fas fa-ban"></i></a>
+                        {% else %}
+                        <a class="text-success" title="Activar" href="#" onclick="return abrir_modal('{% url 'bases:codigopostal_inactivar' item.codigo %}')"><i class="fas fa-check"></i></i></a>
+                        {% endif %}
+                        </div></div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+      </table>
+      
+    </div>
+  </div>
+{% endblock %}
+
+{% block js_page %}
+
+<script>
+  
+
+  function filtrar(){
+    var filtro = $('[name="filter"]').val();
+    var tabla = $('.table').DataTable();
+    if (filtro=='activos'){
+      tabla.column(3).search('True', true, false).draw();
+    }else{
+      tabla.column(3).search('', true, false).draw()
+    }
+  }
+
+  function cambiarEstado(id, estado){
+    var tabla = $('.table').DataTable();
+    // Find indexes of rows which have `Yes` in the second column
+    var indexes = tabla.rows().eq( 0 ).filter( function (rowIdx) {
+        return tabla.cell( rowIdx, 0 ).data() == id ? true : false;
+    } );
+
+    var miURL3 = '{% url 'bases:codigopostal_edit' 0 %}'.replace('0', id);
+
+    var accion="<div class='row'><div class='col-2'><a class='text-primary' title='Editar' href='#' onclick='return abrir_modal(\""+miURL3+"\")'><i class='fa fa-edit'></i></a></div><div class='col-2'>";
+
+    var miURL2 = '{% url 'bases:codigopostal_inactivar' 0 %}'.replace('0', id);
+
+    if (estado === 'True'){
+      accion=accion+"<a class='text-danger' title='Inactivar' href='#' onclick='return abrir_modal(\""+miURL2+"\")'><i class='fas fa-ban'></i></a></div></div>";
+    }else{
+      accion=accion+"<a class='text-success' title='Activar' href='#' onclick='return abrir_modal(\""+miURL2+"\")'><i class='fas fa-check'></i></a></div></div>";
+    };
+    tabla.cell( indexes,3 ).data(estado).draw();
+    tabla.cell( indexes,4 ).data(accion).draw();
+    filtrar();
+
+  }
+
+
+  $.fn.dataTable.ext.buttons.agregar = {  
+      text: '<b>Agregar</b> <i class="fas fa-plus"></i> ',
+      className: 'btn btn-success',
+      titleAttr: 'Agregar',
+      action: function ( e, dt, node, config ) {
+          abrir_modal('{% url 'bases:codigopostal_new' %}');
+      }
+  };
+
+  function crearTabla(){
+    $('.table').DataTable({
+      "language":{
+        "sProcessing": "Procesando...",
+        "sLengthMenu": "Mostrar _MENU_ registros",
+        "sZeroRecords": "No se encontraron resultados",
+        "sEmptyTable": "Ningún dato disponible en esta tabla",
+        "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_ registros",
+        "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+        "sInfoFilter": "(filtrando de un total de _MAX_ registros)",
+        "sInfoPostFix": "",
+        "sSearch": "Buscar:",
+        "sUrl": "",
+        "sInfoThousands": ",",
+        "sLoadingRecords": "Cargando...",
+        "oPaginate": {
+          "sFirst": "<span class='fa fa-angle-double-left'></span>",
+          "sLast": "<span class='fa fa-angle-double-right'></span>",
+          "sNext": "<span class='fa fa-angle-right'></span>",
+          "sPrevious": "<span class='fa fa-angle-left'></span>"
+        },
+        "oAria": {
+          "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+          "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+        },
+      },
+      "columnDefs": [
+        { "visible": false, "targets": 3 }
+      ],
+      dom: "<'row'<'col-sm-9'B<'toolbar'>><'col-sm-3'f>>rtilp",
+      responsive: 'true',
+
+      buttons: [ 
+        'agregar',     
+			  {
+          extend:    'print',
+          text:      '<i class="fa fa-print"></i> ',
+          titleAttr: 'Imprimir',
+          className: 'btn btn-secondary'
+			  },
+        {
+          extend:    'excelHtml5',
+          text:      '<i class="fas fa-file-excel"></i> ',
+          titleAttr: 'Exportar a Excel',
+          className: 'btn btn-secondary'
+        },
+        {
+          extend:    'pdfHtml5',
+          text:      '<i class="fas fa-file-pdf"></i> ',
+          titleAttr: 'Exportar a PDF',
+          className: 'btn btn-secondary'
+        },
+        {
+          extend:    'colvis',
+          //"columns": ':not(.noVis)',
+          text:      '<i class="fas fa-columns"></i> ',
+          titleAttr: 'Ocultar Columnas',
+          className: 'btn btn-secondary'
+        }
+      ]
+      
+    });  
+
+    $("div.toolbar").html("<div class='row'><div class='col-3'><select id='select' class='form-control' name='filter'><option value='activos' selected>Solo Activas</option><option value='todos'>Todos</option></select></div></div>");
+  }
+
+  
+
+  $(document).ready(function() {
+
+    crearTabla();
+    var tabla = $('.table').DataTable();
+    tabla.column(3).search('True', true, false).draw();
+
+    $('[name="filter"]').change(function() {
+      filtrar();
+    });
+
+    //$('#tblProveedores tbody').on( 'click', 'tr', function () {
+    //  var idx = tabla.row( this ).data()[0];
+    //  cambiarEstado(idx,'false');
+    //} );
+
+  });
+</script>
+{% endblock %}

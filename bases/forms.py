@@ -1,7 +1,8 @@
 from django import forms
+from django.forms import BaseModelFormSet
 from django.core.files.images import get_image_dimensions
 
-from .models import Notificacion, Provincia
+from .models import Notificacion, Provincia, Codigo_Postal, Agencia, Profile
 
 class MyModelForm(forms.ModelForm):
 
@@ -31,3 +32,15 @@ class ProvinciaForm(MyModelForm):
 
         exclude = ['um', 'fm', 'uc', 'fc']
         
+
+class CodigoPostalForm(MyModelForm):
+    class Meta:
+        model=Codigo_Postal
+        fields = ['codigo','localidad', 'provincia']
+
+
+class UserAgenciaForm(BaseModelFormSet):
+    class Meta:
+        model=Agencia
+        fields = ['id','nombre']
+        widgets = {'nombre': forms.Select() }

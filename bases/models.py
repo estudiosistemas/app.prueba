@@ -1,7 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django_userforeignkey.models.fields import UserForeignKey
-from usr.models import Profile
+
+from PIL import Image
 
 #Clase Modelo para todos los modelos
 class MyModel(models.Model):
@@ -65,7 +66,7 @@ class Provincia(MyModel):
 
 #MODELO COD_POSTALES
 class Codigo_Postal(MyModel):
-    codigo = models.CharField(max_length=4)
+    codigo = models.CharField(max_length=4,  primary_key=True)
     localidad = models.CharField(max_length=100)
     provincia = models.ForeignKey(Provincia, on_delete=models.CASCADE)
 
@@ -132,9 +133,8 @@ class Agencia(MyModel):
     porcentaje = models.FloatField
     porcentaje_Bs_As = models.FloatField
     logo = models.ImageField(upload_to='logo_pics')
-    localidades = models.ManyToManyField(Codigo_Postal, through='CP_Agencia')
-    usuarios = models.ManyToManyField(Profile, through='User_Agencia')
     empresa = models.ForeignKey(Empresa, on_delete=models.CASCADE)
+    localidades = models.ManyToManyField(Codigo_Postal)
     
     def __str__(self):
         return '{}'.format(self.nombre)
@@ -145,20 +145,24 @@ class Agencia(MyModel):
 
     class Meta:
         verbose_name_plural = "Agencias"
+        ordering = ('nombre',)
 
 
-# #MODELO Postales por Agencia
-class CP_Agencia(models.Model):
-    agencia = models.ForeignKey(Agencia, on_delete=models.CASCADE)
-    codigo_postal = models.ForeignKey(Codigo_Postal, on_delete=models.CASCADE)
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    image = models.ImageField(default='default.jpg', upload_to='profile_pics')
+    agencias = models.ManyToManyField(Agencia)
 
+    def __str__(self):
+        return f'{self.user.username}'
 
-#MODELO Usuarios por Agencia
-class User_Agencia(models.Model):
-    agencia = models.ForeignKey(Agencia, on_delete=models.CASCADE)
-    usuario = models.ForeignKey(Profile, on_delete=models.CASCADE)
+    def save(self,force_insert=False, force_update=False, using=None):
+        super().save()
 
-
-
+        img = Image.open(self.image.path)
+        if img.height > 300 or img.width  > 300:
+            output_size = (300,300)
+            img.thumbnail(output_size)
+            img.save(self.image.path)
 
 

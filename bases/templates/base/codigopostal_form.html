@@ -3,9 +3,9 @@
 <div class="modal-dialog modal-sm">
     <div class="modal-content">
         {% if obj %}
-        <form id="formulario" method="post" action="{% url 'bases:provincia_edit' obj.pk %}">
+        <form id="formulario" method="post" action="{% url 'bases:codigopostal_edit' obj.pk %}">
         {% else %}
-        <form id="formulario" method="post" action="{% url 'bases:provincia_new' %}">
+        <form id="formulario" method="post" action="{% url 'bases:codigopostal_new' %}">
         {% endif %}
             {% csrf_token %}
             <div class="col-xl-12 col-md-12 mb-12">
@@ -18,7 +18,7 @@
                     <div class="row no-gutters align-items-center">
                         <div class="col mr-2">
                             <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
-                                {% if obj %}Editar{% else %}Nueva{% endif %} Provincia
+                                {% if obj %}Editar{% else %}Nuevo{% endif %} Código Postal
                             </div>
                             <div class="dropdown-divider"></div>
                             <div class="row">
@@ -47,17 +47,15 @@
 $('#formulario').submit(function(e) {
     e.preventDefault();
     var cod = $("#id_codigo").val().toUpperCase();
-    var template="{% url 'bases:provincia_validar' 0 %}".replace('0', cod);
-    var data={"id":cod};
-    data = JSON.stringify(data);
-    var token = '{{csrf_token}}';
-    console.log('{{obj.codigo}}');
-    console.log(cod);
-
-    if ('{{obj.codigo}'} == cod){
+    if ({{obj.codigo}} == cod){
         e.currentTarget.submit();
         cerrar_modal();
     }else{
+        var template="{% url 'bases:codigopostal_validar' 0 %}".replace('0', cod);
+        var data={"id":cod};
+        data = JSON.stringify(data);
+        var token = '{{csrf_token}}';
+
         $.ajax({
         headers : {"X-CSRFToken": token},
         type: "POST",
@@ -65,7 +63,7 @@ $('#formulario').submit(function(e) {
         data: data,
         success: function(response){
             if (response == "EXISTE"){
-                mensaje("Código de Provincia ya existe!","warning");
+                mensaje("Código Postal ya existe!","warning");
             }else{
                 e.currentTarget.submit();
                 cerrar_modal();
@@ -77,6 +75,6 @@ $('#formulario').submit(function(e) {
             cerrar_modal();
         }
         });   
-    };
+    }
   });
 </script>

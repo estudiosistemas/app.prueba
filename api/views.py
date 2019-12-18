@@ -24,38 +24,43 @@ from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework.response import Response
 
-from .serializers import ProductoSerializer, NotificacionSerializer, ProvinciaSerializer, ClienteSerializer
+from .serializers import ProductoSerializer, NotificacionSerializer, ProvinciaSerializer, ClienteSerializer, Agencias_UserSerializer, AgenciaSerializer
 from inv.models import Producto
 from fac.models import Cliente
-from bases.models import Notificacion, Provincia
-from usr.models import Profile
+from bases.models import Notificacion, Provincia, Agencia
+from bases.models import Profile
 
 
 class Login(FormView):
     template_name = "base/login.html"
     form_class = AuthenticationForm
-    success_url = reverse_lazy('bases:home')
 
     @method_decorator(csrf_protect)
     @method_decorator(never_cache)
     def dispatch(self,request,*args,**kwargs):
         if request.user.is_authenticated:
-            return HttpResponseRedirect(self.get_success_url())
+            url = reverse_lazy('bases:select_agencia', kwargs={'id_usuario':request.user.id})
+            return HttpResponseRedirect(url)
         else:
             return super(Login,self).dispatch(request,*args,*kwargs)
 
     def form_valid(self,form):
         user = authenticate(username = form.cleaned_data['username'], password = form.cleaned_data['password'])
         token,_ = Token.objects.get_or_create(user = user)
-        print(token)
         if token:
             login(self.request, form.get_user())
             return super(Login,self).form_valid(form)
 
+    def get_success_url(self, **kwargs):     
+        return reverse_lazy('bases:select_agencia', kwargs={'id_usuario':self.request.user.id})  
+
 
 class Logout(APIView):
     def get(self,request, format = None):
-        request.user.auth_token.delete()
+        try:
+            request.user.auth_token.delete()
+        except Exception as e:
+            print(e)
         logout(request)
         return HttpResponseRedirect(reverse_lazy('bases:login'))
 
@@ -112,3 +117,14 @@ class ClienteList(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated,)
     queryset = Cliente.objects.all()
     serializer_class = ClienteSerializer    
+
+
+    
+class Agencias_User(APIView):
+    #authentication_classes = (TokenAuthentication,)
+    #permission_classes = (IsAuthenticated,)
+    
+    def get(self, request, codigo):
+        agen = get_object_or_404(Profile, user_id=codigo)
+        data = Agencias_UserSerializer(agen).data
+        return Response(data)

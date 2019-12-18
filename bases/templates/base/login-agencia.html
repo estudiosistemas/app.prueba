@@ -1,0 +1,83 @@
+{% extends 'base/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block side_bar %}{% endblock side_bar %}
+{% block top_bar %}{% endblock top_bar %}
+{% block page_content %}{% endblock page_content %}
+{% block footer %}{% endblock %}
+{% block login %}
+
+<div class="container">
+
+    <!-- Outer Row -->
+    <div class="row justify-content-center">
+
+        <div class="col-xl-10 col-lg-12 col-md-9">
+
+            <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="card-body p-0">
+                    <!-- Nested Row within Card Body -->
+                    <div class="row">
+                        <div class="col-lg-6 d-none d-lg-block bg-login-image"></div>
+                        <div class="col-lg-6">
+                            <div class="p-5">
+                                <form id="miForm" method="post">
+                                    {% csrf_token %}
+                                    <fieldset class="form-group">
+                                        <legend class="border-bottom mb-4">Selección de Agencia</legend>
+                                        <!-- <label class="required" for="id_agencias">Agencias:</label> -->
+                                        <div class="related-widget-wrapper">
+                                       
+                                        <select class="form-control" name="agencia" required          id="agencia">
+                                        {% for item in agencias %}
+                                            <option value="{{item}}">{{item}}</option>
+                                            {{item}}
+                                        {% endfor %}
+
+                                        </select>
+                                    </fieldset>
+                                    
+                                    <br>
+                                    <div class="form-group">
+                                        <button role="button" class="btn btn-outline-info" type="submit">Seleccionar</button>
+                                        <a class="btn btn-outline-primary" href="{% url 'bases:logout' %}">Volver</a>
+                                    </div>
+                                </form>
+
+                                    <!-- <div class="form-group">
+                      <div class="custom-control custom-checkbox small">
+                        <input type="checkbox" class="custom-control-input" id="customCheck">
+                        <label class="custom-control-label" for="customCheck">Remember Me</label>
+                      </div>
+                    </div> -->
+                        
+                                <!-- <div class="text-center">
+                    <a class="small" href="register.html">Create an Account!</a>
+                  </div> -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+<script>
+$(document).ready(function(){
+    $("#id_agencias").change(function(){
+   
+      var texto = "Opciones Seleccionadas: ";
+      $("#id_agencias option:selected").each(function() {			
+        texto += $(this).text() + " - ";			
+      });
+   
+      console.log(texto);
+   
+    }).trigger('change');		 	
+})
+</script>

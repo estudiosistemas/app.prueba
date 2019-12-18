@@ -1,5 +1,5 @@
-from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404, redirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
 
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
@@ -10,15 +10,20 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, permission_required
 from django.http import HttpResponse
 
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.views.generic.edit import FormView
+
 from django.views import generic
 
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
-from .models import Notificacion, Provincia
-from .forms import NotificacionForm, ProvinciaForm
-from usr.models import Profile
+from .models import Notificacion, Provincia, Codigo_Postal, Agencia
+from .forms import NotificacionForm, ProvinciaForm, CodigoPostalForm, UserAgenciaForm
+from .models import Profile
 
 class SinPrivilegios(LoginRequiredMixin, PermissionRequiredMixin):
     raise_exception=False
@@ -52,6 +57,45 @@ class VistaBaseEdit(SuccessMessageMixin, SinPrivilegios, generic.UpdateView):
     def form_valid(self, form):
         form.instance.um = self.request.user
         return super().form_valid(form)
+
+
+
+##SELECCION DE AGENCIA
+class Select_Agencia(HomeSinPrivilegios, generic.TemplateView):
+    template_name='base/login-agencia.html'
+    success_url=reverse_lazy('bases:home')
+
+    def get_context_data(self, **kwargs):
+        context = super(Select_Agencia, self).get_context_data(**kwargs)
+        myUser = self.kwargs.get('id_usuario', None)
+        context['agencias'] = Agencia.objects.filter(profile__pk=myUser)
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        v_agencia = request.POST.get('agencia')
+        request.session['agencia'] = v_agencia
+        print(v_agencia)
+        return HttpResponseRedirect(reverse_lazy('bases:home'))
+
+
+
+    # def get_queryset(self):
+    #     myUser = self.request.user.id
+    #     myQuery = Agencia.objects.filter(profile__pk=myUser)
+    #     print(myQuery)
+    #     return myQuery
+
+    # def dispatch(self,request,*args,**kwargs):
+    #     if request.user.is_authenticated and 'agencia' in request.session:
+    #         return HttpResponseRedirect(self.get_success_url())
+    #     else:
+    #         return super().dispatch(request, *args, **kwargs)
+    
+    def form_valid(self,form):
+        v_agencia = form.cleaned_data['agencia']
+        self.request.session['agencia'] = v_agencia
+        print(v_agencia)
+        return super(Login_Agencia,self).form_valid(form)
 
 
 #LANDING PAGE
@@ -167,6 +211,18 @@ class ProvinciaNew(VistaBaseCreate):
     form_class=ProvinciaForm
     success_url=reverse_lazy('bases:provincia_list')
 
+
+@login_required(login_url='/login/')
+@permission_required('bases.add_provincia', login_url='bases:sin_privilegios')
+def provincia_validar(request, id):
+    prov = Provincia.objects.filter(codigo=id).first()
+    if request.method=='POST':
+        if prov:
+            return HttpResponse('EXISTE')
+        return HttpResponse('FAIL')
+    return HttpResponse('FAIL')
+
+
 class ProvinciaEdit(VistaBaseEdit):
     permission_required = 'bases.change_Provincia'
     model = Provincia
@@ -192,5 +248,60 @@ def provincia_inactivar(request, id):
         prv.save()
         contexto={'obj':'OK'}
         return HttpResponse('Provincia Inactivada')
+
+    return render(request,template_name, contexto)
+
+
+# Vista Codigos Postales
+class CodigoPostalView(SinPrivilegios, generic.ListView ):
+    permission_required = 'bases.view_codigo_postal'
+    model = Codigo_Postal
+    template_name = 'base/codigopostal_list.html'
+    context_object_name = 'obj'
+
+class CodigoPostalNew(VistaBaseCreate):
+    permission_required = 'bases.add_codigo_postal'
+    model = Codigo_Postal
+    template_name='base/codigopostal_form.html'
+    form_class=CodigoPostalForm
+    success_url=reverse_lazy('bases:codigopostal_list')
+
+
+@login_required(login_url='/login/')
+@permission_required('bases.add_codigo_postal', login_url='bases:sin_privilegios')
+def codigopostal_validar(request, id):
+    prov = Codigo_Postal.objects.filter(codigo=id).first()
+    if request.method=='POST':
+        if prov:
+            return HttpResponse('EXISTE')
+        return HttpResponse('FAIL')
+    return HttpResponse('FAIL')
+
+
+class CodigoPostalEdit(VistaBaseEdit):
+    permission_required = 'bases.change_codigo_postal'
+    model = Codigo_Postal
+    template_name='base/codigopostal_form.html'
+    form_class=CodigoPostalForm
+    success_url=reverse_lazy('bases:codigopostal_list')
+
+
+@login_required(login_url='/login/')
+@permission_required('bases.change_codigo_postal', login_url='bases:sin_privilegios')
+def codigopostal_inactivar(request, id):
+    template_name='base/codigopostal_inactivar.html'
+    contexto={}
+    cp = Codigo_Postal.objects.filter(pk=id).first()
+    if not cp:
+        return HttpResponse('Código Postal no existe')
+
+    if request.method=='GET':
+        contexto={'obj': cp}
+
+    if request.method=='POST':
+        cp.estado=False
+        cp.save()
+        contexto={'obj':'OK'}
+        return HttpResponse('Código Postal Inactivado')
 
     return render(request,template_name, contexto)
